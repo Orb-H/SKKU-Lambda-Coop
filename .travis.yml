@@ -15,4 +15,4 @@ script:
   - echo "Deploy!!"
 
 after_success:
-  - firebase deploy --token $FIREBASE_TOKEN --except functions
+  - firebase deploy --token $FIREBASE_TOKEN
