@@ -9,6 +9,7 @@ branches:
 before_script:
   - npm install -g firebase-tools
   - npm install -g eslint
+  - npm install -g eslint-plugin-promise@latest --save-dev
   - npm install
 
 script:
