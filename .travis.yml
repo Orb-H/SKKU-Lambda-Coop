@@ -3,5 +3,5 @@ node_js:
   - "10.16.0"
 script:
   - echo "Deploy!!"
-after_deploy:
+after_success:
   - firebase deploy --project SKKU-Coop --token $FIREBASE_TOKEN
