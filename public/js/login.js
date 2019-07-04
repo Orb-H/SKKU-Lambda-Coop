@@ -8,10 +8,7 @@ $(document).ready(function() {
     } else if (pw == '') {
       alert('Fill PW');
     } else {
-      if (id === 'admin' && pw === 'admin321') {
-        location.href = 'admin.html';
-      }
-      /*$.post("login.php", {
+      $.post("/login", {
         id: id,
         pw: pw
       }, function(data) {
@@ -22,7 +19,7 @@ $(document).ready(function() {
         } else {
           alert("???????");
         }
-      })*/
+      });
     }
-  })
-})
+  });
+});
