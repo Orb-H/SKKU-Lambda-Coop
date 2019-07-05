@@ -8,8 +8,8 @@ branches:
 
 before_script:
   - npm install -g firebase-tools
-  - npm install -g eslint
-  - npm install -g eslint-plugin-promise
+  - npm install eslint
+  - npm install eslint-plugin-promise
 
 script:
   - echo "Deploy!!"
