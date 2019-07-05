@@ -12,8 +12,10 @@ $(document).ready(function() {
         id: id,
         pw: pw
       }, function(data) {
-        if (data === 'I' || data === 'P') {
-          alert("Invalid account");
+        if (data === 'I') {
+          alert("Invalid ID");
+        } else if (data === 'P') {
+          alert("Invalid password");
         } else if (data === 'S') {
           location.href = 'admin.html';
         } else {

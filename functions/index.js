@@ -10,8 +10,8 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 });
 
 exports.login = functions.https.onRequest((request, response) => {
-  const id = request.query.id;
-  const pw = request.query.pw;
+  const id = request.body.id;
+  const pw = request.body.pw;
   if (id === 'admin' && pw === 'admin321') {
     response.send('S');
   } else if (id !== 'admin') {
@@ -19,4 +19,5 @@ exports.login = functions.https.onRequest((request, response) => {
   } else {
     response.send('P');
   }
+  response.send('?');
 });
