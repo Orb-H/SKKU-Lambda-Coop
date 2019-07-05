@@ -5,6 +5,16 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrite": [
+      {
+        "source": "/login",
+        "function": "login"
+      },
+      {
+        "source": "/helloWorld",
+        "function": "helloWorld"
+      }
     ]
   },
   "database": {
