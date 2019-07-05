@@ -8,8 +8,8 @@
     ],
     "rewrites": [
       {
-        "source": "/login",
-        "function": "login"
+        "source": "/adminLogin",
+        "function": "adminLogin"
       },
       {
         "source": "/helloWorld",

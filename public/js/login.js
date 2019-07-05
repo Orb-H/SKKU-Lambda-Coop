@@ -8,7 +8,7 @@ $(document).ready(function() {
     } else if (pw == '') {
       alert('Fill PW');
     } else {
-      $.post("/login", {
+      $.post("/adminLogin", {
         id: id,
         pw: pw
       }, function(data) {
