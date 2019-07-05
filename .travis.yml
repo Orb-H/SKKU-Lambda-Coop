@@ -13,6 +13,9 @@ before_script:
   - npm install
 
 script:
+  - npm run build
+  - npm run test
+  - npm run lint
   - echo "Deploy!!"
 
 deploy:
