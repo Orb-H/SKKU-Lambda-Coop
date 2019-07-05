@@ -6,7 +6,7 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrite": [
+    "rewrites": [
       {
         "source": "/login",
         "function": "login"
