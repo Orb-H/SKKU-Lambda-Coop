@@ -4,35 +4,69 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+  <title>SKKoin Administration Page</title>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
   <!-- update the version number as needed -->
-  <script defer src="/__/firebase/6.2.4/firebase-app.js"></script>
+  <script src="/__/firebase/6.2.4/firebase-app.js"></script>
   <!-- include only the Firebase features as you need -->
-  <script defer src="/__/firebase/6.2.4/firebase-auth.js"></script>
-  <script defer src="/__/firebase/6.2.4/firebase-database.js"></script>
-  <script defer src="/__/firebase/6.2.4/firebase-storage.js"></script>
+  <script src="/__/firebase/6.2.4/firebase-auth.js"></script>
+  <script src="/__/firebase/6.2.4/firebase-database.js"></script>
+  <script src="/__/firebase/6.2.4/firebase-storage.js"></script>
   <!-- initialize the SDK after all desired features are loaded -->
-  <script defer src="/__/firebase/init.js"></script>
+  <script src="/__/firebase/init.js"></script>
 
-  <script defer type="text/javascript">
+  <script type="text/javascript">
+    init();
+
+    function lookUpItems() {
+      var database = firebase.database();
+      /*database.ref('/gifticons')
+       */
+      //Load all gifticons
+      //Load #gifticons
+      //Configure #gifticons
+    }
+
+    function addItem() {
+      var database = firebase.database();
+      /*database.ref('/gifticons/'+itemID).set({
+      //Set all variables
+    });
+*/
+    }
+
+    function editItem() {
+      var database = firebase.database();
+      /*database.ref('/gifticons/'+itemID).update({
+//Update if needed
+    })
+      */
+    }
+
+    function removeItem() {
+      var database = firebase.database();
+      //database.ref('/gitficons/'+itemID).remove();
+    }
+
     function init() {
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-
-        } else {
-          location.href = "/";
-        }
-      })
+      if (firebase.auth().currentUser) {
+        $("body").text("기프티콘 등록 <p> <h3> 기프티콘 목록 </h3> <table id = \"gifticons\"></table> <button> 조회 </button> </p>");
+      } else {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            $("body").text("기프티콘 등록 <p> <h3> 기프티콘 목록 </h3> <table id = \"gifticons\"></table> <button> 조회 </button> </p>");
+          } else {
+            location.href = "/";
+            alert('Login first!!!');
+          }
+        });
+      }
     }
   </script>
 </head>
 
 <body>
-  <ol>
-    <li>기프티콘 등록</li>
-    <li>기프티콘 조회</li>
-  </ol>
 </body>
 
 </html>

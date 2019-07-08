@@ -24,9 +24,9 @@
 			} else if (pw == '') {
 				alert('Fill PW');
 			} else {
-				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 					.then(function() {
-						firebase.auth().signInWithEmailAndPassword(id, pw)
+						return firebase.auth().signInWithEmailAndPassword(id, pw)
 							.then(function(user) {
 								location.href = "admin.html";
 							})
@@ -68,6 +68,19 @@
 
 		$(document).ready(function() {
 			init();
+
+			$('#ID').addEventListener("keyup", function(event) {
+				if (event.keyCode === 13) {
+					event.preventDefault();
+					signIn();
+				}
+			});
+			$('#PW').addEventListener("keyup", function(event) {
+				if (event.keyCode === 13) {
+					event.preventDefault();
+					signIn();
+				}
+			})
 		});
 	</script>
 </head>
