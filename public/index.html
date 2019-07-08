@@ -69,13 +69,13 @@
 		$(document).ready(function() {
 			init();
 
-			$('#ID').addEventListener("keyup", function(event) {
+			document.getElementById('ID').addEventListener("keyup", function(event) {
 				if (event.keyCode === 13) {
 					event.preventDefault();
 					signIn();
 				}
 			});
-			$('#PW').addEventListener("keyup", function(event) {
+			document.getElementById('PW').addEventListener("keyup", function(event) {
 				if (event.keyCode === 13) {
 					event.preventDefault();
 					signIn();
@@ -83,11 +83,16 @@
 			})
 		});
 	</script>
+	<style>
+		table td {
+			text-align: center;
+		}
+	</style>
 </head>
 
 <body>
 	<form align=center id="form" class="form" method="post">
-		<image src="https://www.pngarts.com/files/4/Coin-PNG-Picture.png" width=200 />
+		<image src="img/skkoin_title.png" width=200 />
 		<p />
 		<table border=1 bordercolor=black align=center>
 			<tr>
