@@ -8,17 +8,3 @@ admin.initializeApp();
 exports.helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
-
-exports.adminLogin = functions.https.onRequest((request, response) => {
-  var id = request.body.id;
-  var pw = request.body.pw;
-
-  if (id === 'admin' && pw === 'admin321') {
-    response.send('S');
-  } else if (id !== 'admin') {
-    response.send('I');
-  } else if (pw !== 'admin321') {
-    response.send('P');
-  }
-  response.send('?');
-});
