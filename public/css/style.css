@@ -1,0 +1,78 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+* {
+  color: #181c34;
+  font-size: 16px;
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.5;
+  font-weight: 350;
+}
+
+.outermost {
+  padding: 40px 48px 40px 48px;
+  border: solid 1px #999;
+  border-radius: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 980px;
+  align-content: center;
+}
+
+.button {
+  background-color: #072a60;
+  color: #fff;
+}
+
+.disabled {
+  color: #999;
+}
+
+.text {
+  border: solid 1px #072a60;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table * {
+  align-content: center;
+}
+
+table th,
+table td {
+  border: 1px solid #072a60;
+  padding: 6px 13px;
+  text-align: center;
+}
+
+table tr {
+  background-color: #fff;
+}
+
+table thead td {
+  font-weight: 500;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+input {
+  border: 0px;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
+button {
+  background-color: #072a60;
+  color: #fff;
+  border: 0px;
+  padding: 5px;
+  margin: 5px;
+}

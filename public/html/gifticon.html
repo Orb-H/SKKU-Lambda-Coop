@@ -1,0 +1,131 @@
+<ul>
+  <li>
+    <a href="#lookup">기프티콘 조회</a>
+  </li>
+  <li>
+    <a href="#add">기프티콘 추가</a>
+  </li>
+</ul>
+<hr />
+<p id="lookup">
+  <h2>기프티콘 목록</h2>
+  <p>
+    <button id="giftlookup">조회</button>
+  </p>
+  <table border=0 cellspacing=0 id=\"gifticons\">
+    <thead>
+      <tr>
+        <td>Type</td>
+        <td>이름</td>
+        <td>가격</td>
+        <td>재고</td>
+        <td>기프티콘 상세정보</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Starbucks_Americano</td>
+        <td>스타벅스 아메리카노</td>
+        <td>30 SKK</td>
+        <td>10</td>
+        <td><button id="giftdetaillookup1">목록 조회</button></td>
+      </tr>
+      <tr>
+        <td>GS25_BananaMilk</td>
+        <td>GS25 바나나우유</td>
+        <td>15 SKK</td>
+        <td>50</td>
+        <td><button id="giftdetaillookup2">목록 조회</button></td>
+      </tr>
+    </tbody>
+  </table>
+</p>
+<p id="add">
+  <h2>기프티콘 추가</h2>
+  <form id="addform" method="POST">
+    <table>
+      <thead>
+        <tr>
+          <td>Type</td>
+          <td>이름</td>
+          <td>이미지</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <input type="text" id="gifttype" class="gifttype text" placeholder="Type" />
+          </td>
+          <td>
+            <input type="text" id="giftname" class="giftname text" placeholder="Name(Optional)" />
+          </td>
+          <td>
+            <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
+            <p id="images"></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    * 새로운 종류의 기프티콘을 추가하는 경우에만 이름을 입력합니다.
+    <p>
+      <button id="addGift" onclick="sendItem()">추가</button>
+    </p>
+  </form>
+</p>
+
+<script type="text/javascript">
+  function lookUpItems() {
+    var database = firebase.database();
+    /*database.ref('/gifticons')
+     */
+    //Load all gifticons
+    //Load #gifticons
+    //Configure #gifticons
+  }
+
+  function detailLookUpItems() {
+    var database = firebase.database();
+    /*
+    database.ref('');
+    */
+    document.getElementById("detailgift").innerHTML = `
+  <table>
+  </table>
+  `;
+  }
+
+  function addItem(input) {
+    if (input.files && input.files[0]) {
+      document.getElementById("images").innerHTML = "";
+      for (i = 0; i < input.files.length; i++) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          document.getElementById("images").innerHTML += ("<p><img src=" + e.target.result + " width=150 /></p>");
+        };
+
+        reader.readAsDataURL(input.files[i]);
+      }
+    }
+  }
+
+  function sendItem() {
+    var database = firebase.database();
+    var type = document.getElementById("gifttype");
+    var name = document.getElementById("giftname");
+    var input = document.getElementById("files");
+    if (input.files && input.files[0]) {
+      for (i = 0; i < input.files.length; i++) {
+        var reader = new FileReader();
+        var image = reader.readAsDataURL(input.files[i]);
+
+        //database.ref('');
+      }
+    }
+  }
+
+  function removeItem() {
+    var database = firebase.database();
+    //database.ref('/gitficons/'+itemID).remove();
+  }
+</script>
