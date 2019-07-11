@@ -2,6 +2,7 @@
 
 <head>
 	<title>SKKoin Adminstrator Login page</title>
+	<link rel="shortcut icon" href="favicon.ico">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 	<!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -69,13 +70,13 @@
 		$(document).ready(function() {
 			init();
 
-			$('#ID').addEventListener("keyup", function(event) {
+			document.getElementById('ID').addEventListener("keyup", function(event) {
 				if (event.keyCode === 13) {
 					event.preventDefault();
 					signIn();
 				}
 			});
-			$('#PW').addEventListener("keyup", function(event) {
+			document.getElementById('PW').addEventListener("keyup", function(event) {
 				if (event.keyCode === 13) {
 					event.preventDefault();
 					signIn();
@@ -83,30 +84,21 @@
 			})
 		});
 	</script>
+
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
 	<form align=center id="form" class="form" method="post">
-		<image src="https://www.pngarts.com/files/4/Coin-PNG-Picture.png" width=200 />
+		<image src="img/skkoin_title.png" width=200 />
 		<p />
-		<table border=1 bordercolor=black align=center>
-			<tr>
-				<td>ID</td>
-				<td>
-					<input type="text" name="ID" id="ID" />
-				</td>
-			</tr>
-			<tr>
-				<td>PW</td>
-				<td>
-					<input type="password" name="PW" id="PW" />
-				</td>
-			</tr>
-		</table>
+		<input type="text" name="ID" id="ID" class="text" placeholder="아이디" />
 		<p />
-		<input type="button" name="login" id="login" value="Login" onclick="signIn()" />
+		<input type="password" name="PW" id="PW" class="text" placeholder="비밀번호" />
+		<p />
+		<input type="button" name="login" id="login" class="button" value="로그인" onclick="signIn()" />
 	</form>
-	<p id="already">You've already logged in. You will be redirected to the admin page soon.</p>
+	<p id="already">You will be redirected to the admin page soon.</p>
 </body>
 
 </html>
