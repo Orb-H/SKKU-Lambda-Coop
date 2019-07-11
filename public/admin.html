@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SKKoin Administration Page</title>
+  <link rel="shortcut icon" href="favicon.ico">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
   <!-- update the version number as needed -->
@@ -17,21 +18,41 @@
   <script src="/__/firebase/init.js"></script>
 
   <script type="text/javascript">
+    var lastScrollTop = 0;
+    var curPage = -1;
     init();
 
     function init() {
       if (!!firebase.auth().currentUser) {
         console.log("exist");
-        loadGifticonContent();
+        loadReadme();
       }
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           console.log("re-authed");
-          loadGifticonContent();
+          loadReadme();
         } else {
           console.log("unauth");
           location.href = "/";
         }
+      });
+
+      $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fhtml%2Fgifticon.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+        $("#commitdategifticon").html(response[0].commit.author.date.substring(5, 10));
+        $("#commitnamegifticon").html(response[0].commit.message);
+      });
+      $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fhtml%2Fuser.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+        $("#commitdateuser").html(response[0].commit.author.date.substring(5, 10));
+        $("#commitnameuser").html(response[0].commit.message);
+      });
+      $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fhtml%2FREADME.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+        $("#commitdatereadme").html(response[0].commit.author.date.substring(5, 10));
+        $("#commitnamereadme").html(response[0].commit.message);
+      });
+      $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+        $("#commitdate").html(response[0].commit.author.date.substring(5, 10));
+        $("#commithash").html(response[0].sha.substring(0, 7));
+        $("#commitname").html(response[0].commit.message);
       });
     }
 
@@ -46,28 +67,104 @@
     }
 
     function loadGifticonContent() {
-      $("#loadGifticon").prop('disabled', true).toggleClass("disabled");
-      $("#loadUser").prop('disabled', false).toggleClass("disabled");
-      $(".outermost").load('html/gifticon.html');
+      if (curPage === 1) return;
+      curPage = 1;
+      $(".content").load('html/gifticon.html');
+      $("#title").html("<b>🔧 기프티콘</b>");
     }
 
     function loadUserContent() {
-      $("#loadUser").prop('disabled', true).toggleClass("disabled");
-      $("#loadGifticon").prop('disabled', false).toggleClass("disabled");
-      $(".outermost").load('html/user.html');
+      if (curPage === 2) return;
+      curPage = 2;
+      $(".content").load('html/user.html');
+      $("#title").html("<b>🔧 사용자</b>");
     }
+
+    function loadReadme() {
+      if (curPage === 0) return;
+      curPage = 0;
+      $(".content").load('html/README.html');
+      $("#title").html("<b>📜 README.md</b>");
+    }
+
+    $(window).scroll(function() {
+      var st = $(this).scrollTop();
+      if ((st > lastScrollTop) && (st > 20) && (lastScrollTop <= 20)) {
+        $("header").stop().animate({
+          opacity: "0.2"
+        }, 400);
+      } else if ((st < lastScrollTop) && (st < 20) && (lastScrollTop >= 20)) {
+        $("header").stop().animate({
+          opacity: "1"
+        }, 400);
+      }
+      lastScrollTop = st;
+    });
   </script>
 
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
-  <p align=center>
-    <button id="loadGifticon" onclick="loadGifticonContent()">기프티콘 관리</button><button id="loadUser" onclick="loadUserContent()" class="disabled">사용자 관리</button><button align=right id="logout" onclick="logout()">로그아웃</button>
-    <br />
-    무언가 찾고자 할 때에는 Ctrl+F를 이용하는 것이 편리합니다.
-  </p>
-  <div class="outermost">
+  <header>
+    <div class="left" style="width:50%;align-content:center;display:inline-block;">
+      <img src="img/skkoin_icon.png" width="80px" style="float:left;padding:10px;" />
+      <span style="display:inline-block;font-size:50px;font-weight:500;color:#fff;vertical-align:middle;line-height:100px">
+        &nbsp;SKKOIN
+      </span>
+    </div>
+    <div class="right" style="height:100px;">
+      <button style="display:inline-block;margin:32px 20px 32px 0px;vertical-align:middle;" align=right id="logout" onclick="logout()">로그아웃</button>
+    </div>
+  </header>
+  <div class="container" style="margin-top:120px;">
+    <div class="title">
+      <div class="left" style="width:60%">
+        🟦 <b>Orb-H</b> <span id="commitname"></span>
+      </div>
+      <div class="middle"></div>
+      <div class="right">
+        Latest commit <span id="commithash"></span> at <span id="commitdate"></span>
+      </div>
+    </div>
+    <div class="menu">
+      <div class="left">
+        📜 <a id="loadReadme" onclick="loadReadme()">README.md</a>
+      </div>
+      <div class="middle">
+        <span id="commitnamereadme"></span>
+      </div>
+      <div class="right">
+        change at <span id="commitdatereadme"></span>
+      </div>
+    </div>
+    <div class="menu">
+      <div class="left">
+        🔧 <a id="loadGifticon" onclick="loadGifticonContent()">기프티콘 관리</a>
+      </div>
+      <div class="middle">
+        <span id="commitnamegifticon"></span>
+      </div>
+      <div class="right">
+        change at <span id="commitdategifticon"></span>
+      </div>
+    </div>
+    <div class="menu last">
+      <div class="left">
+        🔧 <a id="loadUser" onclick="loadUserContent()">사용자 관리</a>
+      </div>
+      <div class="middle">
+        <span id="commitnameuser"></span>
+      </div>
+      <div class="right">
+        change at <span id="commitdateuser"></span>
+      </div>
+    </div>
+    <p />
+    <div class="title" id="title">
+    </div>
+    <div class="content">
+    </div>
   </div>
 </body>
 

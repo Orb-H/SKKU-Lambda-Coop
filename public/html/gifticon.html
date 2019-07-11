@@ -1,11 +1,12 @@
-<ul>
+<h1>기프티콘 관리</h1>
+<ol>
   <li>
     <a href="#lookup">기프티콘 조회</a>
   </li>
   <li>
     <a href="#add">기프티콘 추가</a>
   </li>
-</ul>
+</ol>
 <hr />
 <p id="lookup">
   <h2>기프티콘 목록</h2>
@@ -23,7 +24,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <!--<tr>
         <td>Starbucks_Americano</td>
         <td>스타벅스 아메리카노</td>
         <td>30 SKK</td>
@@ -36,7 +37,7 @@
         <td>15 SKK</td>
         <td>50</td>
         <td><button id="giftdetaillookup2">목록 조회</button></td>
-      </tr>
+      </tr>-->
     </tbody>
   </table>
 </p>
@@ -61,7 +62,7 @@
           </td>
           <td>
             <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-            <p id="images"></p>
+            <p id="images" style="margin:0px"></p>
           </td>
         </tr>
       </tbody>
@@ -106,6 +107,8 @@
 
         reader.readAsDataURL(input.files[i]);
       }
+    } else {
+      document.getElementById("images").innerHTML = "";
     }
   }
 
@@ -127,5 +130,10 @@
   function removeItem() {
     var database = firebase.database();
     //database.ref('/gitficons/'+itemID).remove();
+  }
+
+  function init() {
+    lookUpitems();
+    setInterval("lookUpItems()", 3600000);
   }
 </script>

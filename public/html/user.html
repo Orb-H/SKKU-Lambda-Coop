@@ -1,3 +1,4 @@
+<h1>사용자 관리</h1>
 <p>
   <h2>사용자 목록</h2>
   <table border=0 cellspacing=0 id=\"users\">
@@ -17,4 +18,12 @@
 </p>
 
 <script type="text/javascript">
+  function lookUpUsers() {
+
+  }
+
+  function init() {
+    lookUpUsers();
+    setInterval("lookUpUsers()", 3600000);
+  }
 </script>
