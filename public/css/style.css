@@ -1,4 +1,7 @@
-@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+@font-face {
+  font-family: "Noto Sans KR";
+  src: url(fonts/NotoSansCJKkr-Regular.otf)
+}
 
 * {
   color: #181c34;
@@ -21,8 +24,9 @@ span {
 }
 
 header {
-  position: fixed;
+  position: absolute;
   width: 100%;
+  min-width: 996px;
   height: 100px;
   top: 0;
   left: 0;
@@ -33,13 +37,18 @@ header {
   margin: 0px;
 }
 
+.header {
+  position: fixed;
+  width: 100%;
+}
+
 a:hover {
   cursor: pointer;
   text-decoration: underline;
 }
 
 .container {
-  max-width: 980px;
+  width: 980px;
   margin: auto;
 }
 
