@@ -1,11 +1,10 @@
 <h1>사용자 관리</h1>
 <p>
   <h2>사용자 목록</h2>
-  <table border=0 cellspacing=0 id=\"users\">
+  <table border=0 cellspacing=0 id="users">
     <thead>
       <tr>
-        <td>이름</td>
-        <td>학번</td>
+        <td>이메일</td>
         <td>닉네임</td>
         <td>현재 토큰</td>
         <td>토큰 지급</td>
@@ -14,16 +13,51 @@
     <tbody>
     </tbody>
   </table>
-  <button>조회</button>
+  <button onclick="lookUpUsers()">조회</button>
+  <h2>토큰 일괄 송금</h2>
+  <table border=0 cellspacing=0 id="sendtoken">
+    <thead>
+      <tr>
+        <td>이메일</td>
+        <td>보낼 양</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <button onclick="addRow()">행 추가</button><button onclick="deleteRow()">행 삭제</button><button onclick="sendToken()">토큰 전송</button>
 </p>
 
 <script type="text/javascript">
+  var row = 0;
+
   function lookUpUsers() {
 
   }
 
-  function giveToken(email) {
-    var from = 'wallet address of admin here'; // FIXME:  
+  function sendToken() {
+    //전송할 내역 서버에 전송
+    while (row > 0) {
+      deleteRow();
+    }
+  }
+
+  function addRow() {
+    var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(row);
+    row = row + 1;
+
+    var email = newRow.insertCell(0);
+    var amount = newRow.insertCell(1);
+
+    email.innerHTML = "<input type=\"text\" class=\"text\"></input>";
+    amount.innerHTML = "<input type=\"text\" class=\"text\"></input>";
+  }
+
+  function deleteRow() {
+    var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
+    row = row - 1;
+    table.deleteRow(row);
   }
 
   function init() {
