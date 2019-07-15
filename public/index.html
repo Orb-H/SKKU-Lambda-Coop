@@ -29,7 +29,19 @@
 					.then(function() {
 						return firebase.auth().signInWithEmailAndPassword(id, pw)
 							.then(function(user) {
-								location.href = "admin.html";
+								firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+									/*$.post('/???', { //FIXME: address needed
+										token: idToken
+									}, function(response) {
+										if (response === 'true') {
+											location.href = "admin.html";
+										} else {
+											alert("Is this administrator's account??");
+											firebase.auth().signOut();
+										}
+									});*/
+									console.log(idToken);
+								});
 							})
 							.catch(function(error) {
 								var errorCode = error.code;
