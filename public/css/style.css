@@ -154,7 +154,7 @@ a:hover {
 
 .right {
   float: right;
-  width: 35%;
+  width: 30%;
   align-content: flex-end;
   text-align: right;
 }
@@ -166,7 +166,7 @@ a:hover {
 
 .middle {
   float: left;
-  width: 35%;
+  width: 40%;
 }
 
 .code {
