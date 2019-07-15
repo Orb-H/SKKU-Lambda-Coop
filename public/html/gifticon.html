@@ -1,7 +1,15 @@
 <h1>기프티콘 관리</h1>
 <ol>
   <li>
-    <a href="#lookup">기프티콘 조회</a>
+    기프티콘 조회
+    <ol>
+      <li>
+        <a href="#lookup">기프티콘 조회</a>
+      </li>
+      <li>
+        <a href="#detaillookup">기프티콘 상세 정보</a>
+      </li>
+    </ol>
   </li>
   <li>
     <a href="#add">기프티콘 추가</a>
@@ -13,7 +21,7 @@
   <p>
     <button id="giftlookup">조회</button>
   </p>
-  <table border=0 cellspacing=0 id=\"gifticons\">
+  <table border=0 cellspacing=0 id="gifticons">
     <thead>
       <tr>
         <td>Type</td>
@@ -39,6 +47,19 @@
         <td><button id="giftdetaillookup2">목록 조회</button></td>
       </tr>-->
     </tbody>
+  </table>
+</p>
+<p id="detaillookup">
+  <h4>기프티콘 상세 정보</h4>
+  <table id="gifticondetail">
+    <thead>
+      <tr>
+        <td>Type</td>
+        <td>이름</td>
+        <td>기프티콘 번호</td>
+        <td>이미지</td>
+      </tr>
+    </thead>
   </table>
 </p>
 <p id="add">
