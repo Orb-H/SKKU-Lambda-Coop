@@ -2,7 +2,7 @@
 <ol>
   <li>
     기프티콘 조회
-    <ol>
+    <ol type="A">
       <li>
         <a href="#lookup">기프티콘 조회</a>
       </li>
@@ -44,6 +44,7 @@
         <td>기프티콘 번호</td>
         <td>이미지</td>
         <td>지급 여부</td>
+        <td>삭제</td>
       </tr>
     </thead>
     <tbody>
@@ -115,7 +116,7 @@
 
     var table = document.getElementById("gifticondetail").getElementsByTagName('tbody')[0];
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-      /* $.post("/???", { //FIXME: address needed
+      $.post("/???", { //FIXME: address needed
         token: idToken,
         type: gifttype
       }, function(response) {
@@ -126,22 +127,14 @@
           var number = newRow.insertCell(0);
           var image = newRow.insertCell(1);
           var used = newRow.insertCell(2);
+          var del = newRow.insertCell(3);
 
           number.innerHTML = response.content[i].number;
           image.innerHTML = "<img src=" + response.content[i].image + " />";
           used.innerHTML = (response.content[i].used === "true" ? "<font color=red>사용</font>" : "<font color=green>미사용</font>");
+          del.innerHTML = "<button onclick=removeItem(" + response.content[i].number + ")>삭제</button>";
         }
-    }); */
-      /*$.post('/???', { //FIXME: address needed
-        token: idToken
-      }, function(response) {
-        if (response === 'true') {
-          location.href = "admin.html";
-        } else {
-          alert("Is this administrator's account??");
-          firebase.auth().signOut();
-        }
-      });*/
+      });
     });
   }
 
@@ -185,7 +178,7 @@
               length: input.files.length,
               images: encoding
             })); //FIXME
-            $.post("/???", { //FIXME: address needed
+            /*$.post("/???", { //FIXME: address needed
               type: gifttype.value,
               name: giftname.value,
               length: input.files.length,
@@ -196,19 +189,28 @@
               } else {
                 alert("등록 실패!");
               }
-            });
+            });*/
           }
         };
         reader.readAsDataURL(input.files[i]);
       }
     }
-
-
   }
 
-  function removeItem() {
-    var database = firebase.database();
-    //database.ref('/gitficons/'+itemID).remove();
+  function removeItem(giftnumber) {
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      /*$.post("/???", { //FIXME: address needed
+          token: idToken,
+          number: giftnumber
+        }, function(response) {
+          if (response === "true") {
+            alert("삭제 성공!");
+          } else {
+            alert("삭제 실패");
+          }
+        }
+      });*/
+    });
   }
 
   function init() {
