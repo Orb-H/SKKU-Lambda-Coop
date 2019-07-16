@@ -88,7 +88,7 @@
 
     var table = document.getElementById("gifticons").getElementsByTagName('tbody')[0];
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-      /*$.post("/???", { //FIXME: address needed
+      $.post("/gifticons/list", {
         token: idToken
       }, function(response) {
         response = JSON.parse(response);
@@ -107,7 +107,7 @@
           count.innerHTML = response.content[i].count;
           button.innerHTML = "<button onclick=detailLookUpItems(" + response.content[i].type + ")>상세 정보 조회</button>";
         }
-      }); */
+      });
     });
   }
 
@@ -116,7 +116,7 @@
 
     var table = document.getElementById("gifticondetail").getElementsByTagName('tbody')[0];
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-      $.post("/???", { //FIXME: address needed
+      $.post("/gifticons/detail", {
         token: idToken,
         type: gifttype
       }, function(response) {
@@ -172,13 +172,7 @@
           encoding.push(result);
 
           if (encoding.length === length) {
-            console.log(JSON.stringify({
-              type: gifttype.value,
-              name: giftname.value,
-              length: input.files.length,
-              images: encoding
-            })); //FIXME
-            /*$.post("/???", { //FIXME: address needed
+            $.post("/gifticons/register", {
               type: gifttype.value,
               name: giftname.value,
               length: input.files.length,
@@ -189,7 +183,7 @@
               } else {
                 alert("등록 실패!");
               }
-            });*/
+            });
           }
         };
         reader.readAsDataURL(input.files[i]);
@@ -199,17 +193,17 @@
 
   function removeItem(giftnumber) {
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-      /*$.post("/???", { //FIXME: address needed
-          token: idToken,
-          number: giftnumber
-        }, function(response) {
-          if (response === "true") {
-            alert("삭제 성공!");
-          } else {
-            alert("삭제 실패");
+        $.post("/gifticons/remove", {
+            token: idToken,
+            number: giftnumber
+          }, function(response) {
+            if (response === "true") {
+              alert("삭제 성공!");
+            } else {
+              alert("삭제 실패");
+            }
           }
-        }
-      });*/
+        });
     });
   }
 
