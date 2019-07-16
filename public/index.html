@@ -34,20 +34,7 @@
 				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 					.then(function() {
 						return firebase.auth().signInWithEmailAndPassword(id, pw)
-							.then(function(user) {
-								user.getIdToken(true).then(function(idToken) {
-									$.post('/login', {
-										token: idToken
-									}, function(response) {
-										if (response === 'true') {
-											location.href = "admin.html";
-										} else {
-											alert("Is this administrator's account??");
-											firebase.auth().signOut();
-										}
-									});
-								});
-							})
+							.then(function(user) {})
 							.catch(function(error) {
 								var errorCode = error.code;
 								var errorMsg = error.message;
