@@ -30,7 +30,7 @@
 						return firebase.auth().signInWithEmailAndPassword(id, pw)
 							.then(function(user) {
 								firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-									/*$.post('/???', { //FIXME: address needed
+									$.post('/login', {
 										token: idToken
 									}, function(response) {
 										if (response === 'true') {
@@ -39,7 +39,7 @@
 											alert("Is this administrator's account??");
 											firebase.auth().signOut();
 										}
-									});*/
+									});
 									console.log(idToken);
 								});
 							})
