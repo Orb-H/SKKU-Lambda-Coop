@@ -62,7 +62,7 @@
 			firebase.auth().onAuthStateChanged(function(user) {
 				if (user) {
 					user.getIdToken(true).then(function(idToken) {
-						$.post('/login', {
+						$.post('/adminlogin', {
 							token: idToken
 						}, function(response) {
 							if (response === 'true') {
