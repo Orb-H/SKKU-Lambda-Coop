@@ -1,29 +1,89 @@
 <h1>사용자 관리</h1>
 <p>
   <h2>사용자 목록</h2>
-  <table border=0 cellspacing=0 id=\"users\">
+  <table border=0 cellspacing=0 id="users">
     <thead>
       <tr>
-        <td>이름</td>
-        <td>학번</td>
+        <td>이메일</td>
         <td>닉네임</td>
+        <td>지갑 주소</td>
         <td>현재 토큰</td>
-        <td>토큰 지급</td>
       <tr>
     </thead>
     <tbody>
     </tbody>
   </table>
-  <button>조회</button>
+  <button onclick="lookUpUsers()">조회</button>
+  <h2>토큰 송금</h2>
+  <table border=0 cellspacing=0 id="sendtoken">
+    <thead>
+      <tr>
+        <td>이메일</td>
+        <td>보낼 양</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <button onclick="addRow()">행 추가</button><button onclick="deleteRow()">행 삭제</button>
+  <input type="text" class="text" id="pkey" placeholder="Private Key" /><button onclick="sendToken()">토큰 전송</button>
 </p>
 
 <script type="text/javascript">
-  function lookUpUsers() {
+  var row = 0;
 
+  init();
+
+  function lookUpUsers() {
+    $("#users tbody tr").remove();
+
+    var table = document.getElementById("users").getElementsByTagName('tbody')[0];
+    var database = firebase.firestore();
+    database.collection('login').get().then(function(snapshot) {
+      snapshot.forEach(function(doc) {
+        if (doc.exists) {
+          var newRow = table.insertRow(-1);
+
+          var email = newRow.insertCell(0);
+          var nick = newRow.insertCell(1);
+          var wallet = newRow.insertCell(2);
+          var amount = newRow.insertCell(3);
+
+          var data = doc.data();
+
+          email.innerHTML = data.email;
+          nick.innerHTML = data.nickname;
+          wallet.innerHTML = data.w_address;
+          //tokens from luniverse
+        }
+      });
+    });
   }
 
-  function giveToken(uid){
-    
+  function sendToken() {
+    count = 0;
+    //send token through luniverse
+    while (row > 0) {
+      deleteRow();
+    }
+  }
+
+  function addRow() {
+    var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(row);
+    row = row + 1;
+
+    var email = newRow.insertCell(0);
+    var amount = newRow.insertCell(1);
+
+    email.innerHTML = "<input id=\"email" + row + "\"type=\"text\" class=\"text\" placeholder=\"E-mail\"></input>";
+    amount.innerHTML = "<input id=\"amount" + row + "\"type=\"text\" class=\"text\" placeholder=\"Tokens to send\"></input>";
+  }
+
+  function deleteRow() {
+    var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
+    row = row - 1;
+    table.deleteRow(row);
   }
 
   function init() {
