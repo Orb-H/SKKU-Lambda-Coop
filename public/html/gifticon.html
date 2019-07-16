@@ -1,7 +1,15 @@
 <h1>기프티콘 관리</h1>
 <ol>
   <li>
-    <a href="#lookup">기프티콘 조회</a>
+    기프티콘 조회
+    <ol type="A">
+      <li>
+        <a href="#lookup">기프티콘 조회</a>
+      </li>
+      <li>
+        <a href="#detaillookup">기프티콘 상세 정보</a>
+      </li>
+    </ol>
   </li>
   <li>
     <a href="#add">기프티콘 추가</a>
@@ -13,7 +21,7 @@
   <p>
     <button id="giftlookup">조회</button>
   </p>
-  <table border=0 cellspacing=0 id=\"gifticons\">
+  <table border=0 cellspacing=0 id="gifticons">
     <thead>
       <tr>
         <td>Type</td>
@@ -24,75 +32,110 @@
       </tr>
     </thead>
     <tbody>
-      <!--<tr>
-        <td>Starbucks_Americano</td>
-        <td>스타벅스 아메리카노</td>
-        <td>30 SKK</td>
-        <td>10</td>
-        <td><button id="giftdetaillookup1">목록 조회</button></td>
-      </tr>
+    </tbody>
+  </table>
+</p>
+<p id="detaillookup">
+  <h4>기프티콘 상세 정보</h4>
+  <h4 id="gifticoninfo"></h4>
+  <table id="gifticondetail">
+    <thead>
       <tr>
-        <td>GS25_BananaMilk</td>
-        <td>GS25 바나나우유</td>
-        <td>15 SKK</td>
-        <td>50</td>
-        <td><button id="giftdetaillookup2">목록 조회</button></td>
-      </tr>-->
+        <td>기프티콘 ID</td>
+        <td>이미지</td>
+        <td>지급 여부</td>
+        <td>삭제</td>
+      </tr>
+    </thead>
+    <tbody>
     </tbody>
   </table>
 </p>
 <p id="add">
   <h2>기프티콘 추가</h2>
-  <form id="addform" method="POST">
-    <table>
-      <thead>
-        <tr>
-          <td>Type</td>
-          <td>이름</td>
-          <td>이미지</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <input type="text" id="gifttype" class="gifttype text" placeholder="Type" />
-          </td>
-          <td>
-            <input type="text" id="giftname" class="giftname text" placeholder="Name(Optional)" />
-          </td>
-          <td>
-            <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-            <p id="images" style="margin:0px"></p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    * 새로운 종류의 기프티콘을 추가하는 경우에만 이름을 입력합니다.
-    <p>
-      <button id="addGift" onclick="sendItem()">추가</button>
-    </p>
-  </form>
+  <table>
+    <thead>
+      <tr>
+        <td>Type</td>
+        <td>이름</td>
+        <td>이미지</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <input type="text" id="gifttype" class="gifttype text" placeholder="Type" />
+        </td>
+        <td>
+          <input type="text" id="giftname" class="giftname text" placeholder="Name(Optional)" />
+        </td>
+        <td>
+          <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
+          <p id="images" style="margin:0px"></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  * 새로운 종류의 기프티콘을 추가하는 경우에만 이름을 입력합니다.
+  <p>
+    <button id="addGift" onclick="sendItem()">추가</button>
+  </p>
 </p>
 
 <script type="text/javascript">
   function lookUpItems() {
-    var database = firebase.database();
-    /*database.ref('/gifticons')
-     */
-    //Load all gifticons
-    //Load #gifticons
-    //Configure #gifticons
+    $("#gifticons tbody tr").remove();
+
+    var table = document.getElementById("gifticons").getElementsByTagName('tbody')[0];
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      $.post("/gifticons/list", {
+        token: idToken
+      }, function(response) {
+        response = JSON.parse(response);
+        for (i = 0; i < response.length; i++) {
+          var newRow = table.insertRow(-1);
+
+          var type = newRow.insertCell(0);
+          var name = newRow.insertCell(1);
+          var cost = newRow.insertCell(2);
+          var count = newRow.insertCell(3);
+          var button = newRow.insertCell(4);
+
+          type.innerHTML = response.content[i].type;
+          name.innerHTML = response.content[i].name;
+          cost.innerHTML = response.content[i].cost;
+          count.innerHTML = response.content[i].count;
+          button.innerHTML = "<button onclick=detailLookUpItems(" + response.content[i].type + ")>상세 정보 조회</button>";
+        }
+      });
+    });
   }
 
-  function detailLookUpItems() {
-    var database = firebase.database();
-    /*
-    database.ref('');
-    */
-    document.getElementById("detailgift").innerHTML = `
-  <table>
-  </table>
-  `;
+  function detailLookUpItems(gifttype) {
+    $("#gifticondetail tbody tr").remove();
+
+    var table = document.getElementById("gifticondetail").getElementsByTagName('tbody')[0];
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      $.post("/gifticons/detail", {
+        token: idToken,
+        type: gifttype
+      }, function(response) {
+        response = JSON.parse(response);
+        for (i = 0; i < response.length; i++) {
+          var newRow = table.insertRow(-1);
+
+          var number = newRow.insertCell(0);
+          var image = newRow.insertCell(1);
+          var used = newRow.insertCell(2);
+          var del = newRow.insertCell(3);
+
+          number.innerHTML = response.content[i].number;
+          image.innerHTML = "<img src=" + response.content[i].image + " />";
+          used.innerHTML = (response.content[i].used === "true" ? "<font color=red>사용</font>" : "<font color=green>미사용</font>");
+          del.innerHTML = "<button onclick=removeItem(" + response.content[i].number + ")>삭제</button>";
+        }
+      });
+    });
   }
 
   function addItem(input) {
@@ -114,22 +157,54 @@
 
   function sendItem() {
     var database = firebase.database();
-    var type = document.getElementById("gifttype");
-    var name = document.getElementById("giftname");
+    var gifttype = document.getElementById("gifttype");
+    var giftname = document.getElementById("giftname");
     var input = document.getElementById("files");
+
+    var encoding = [];
+    var length = input.files.length;
+
     if (input.files && input.files[0]) {
       for (i = 0; i < input.files.length; i++) {
         var reader = new FileReader();
-        var image = reader.readAsDataURL(input.files[i]);
+        reader.onload = function(e) {
+          var result = e.target.result;
+          encoding.push(result);
 
-        //database.ref('');
+          if (encoding.length === length) {
+            $.post("/gifticons/register", {
+              type: gifttype.value,
+              name: giftname.value,
+              length: input.files.length,
+              images: encoding
+            }, function(result) {
+              if (result === "true") {
+                alert("등록 성공!");
+              } else {
+                alert("등록 실패!");
+              }
+            });
+          }
+        };
+        reader.readAsDataURL(input.files[i]);
       }
     }
   }
 
-  function removeItem() {
-    var database = firebase.database();
-    //database.ref('/gitficons/'+itemID).remove();
+  function removeItem(giftnumber) {
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+        $.post("/gifticons/remove", {
+            token: idToken,
+            number: giftnumber
+          }, function(response) {
+            if (response === "true") {
+              alert("삭제 성공!");
+            } else {
+              alert("삭제 실패");
+            }
+          }
+        });
+    });
   }
 
   function init() {
