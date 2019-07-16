@@ -52,14 +52,15 @@
           email.innerHTML = data.email;
           nick.innerHTML = data.nickname;
           wallet.innerHTML = data.w_address;
-          //tokens
+          //tokens from luniverse
         }
       });
     });
   }
 
   function sendToken() {
-    //전송할 내역 서버에 전송
+    count = 0;
+    //send token through luniverse
     while (row > 0) {
       deleteRow();
     }
