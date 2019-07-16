@@ -76,8 +76,9 @@ exports.adminlogin = functions.https.onRequest((req, res) => {
         if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
           res.send("true");
         } else {
-          res.send("false");
+          throw new Error("Invalid uid");
         }
+        return uid;
       }).catch(function(error) {
         res.send("false");
       });
