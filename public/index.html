@@ -34,21 +34,7 @@
 				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 					.then(function() {
 						return firebase.auth().signInWithEmailAndPassword(id, pw)
-							.then(function(user) {
-								firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-									$.post('/login', {
-										token: idToken
-									}, function(response) {
-										if (response === 'true') {
-											location.href = "admin.html";
-										} else {
-											alert("Is this administrator's account??");
-											firebase.auth().signOut();
-										}
-									});
-									console.log(idToken);
-								});
-							})
+							.then(function(user) {})
 							.catch(function(error) {
 								var errorCode = error.code;
 								var errorMsg = error.message;
@@ -75,9 +61,20 @@
 			$('#already').hide();
 			firebase.auth().onAuthStateChanged(function(user) {
 				if (user) {
-					$('#already').show();
-					$('#login').attr('disabled', true);
-					location.href = 'admin.html';
+					user.getIdToken(true).then(function(idToken) {
+						$.post('/login', {
+							token: idToken
+						}, function(response) {
+							if (response === 'true') {
+								$('#already').show();
+								$('#login').attr('disabled', true);
+								location.href = "admin.html";
+							} else {
+								alert("Is this administrator's account??");
+								firebase.auth().signOut();
+							}
+						});
+					});
 				} else {
 					$('#already').hide();
 					$('#login').attr('disabled', false);

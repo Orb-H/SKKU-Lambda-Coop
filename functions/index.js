@@ -1,23 +1,22 @@
-
 'use strict';
 
 // [START import]
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp()
-const spawn = require('child-process-promise').spawn;
+//const spawn = require('child-process-promise').spawn;
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const db = admin.firestore();
-const cors = require('cors')({origin: true});
+//const cors = require('cors')({origin: true});
 // [END import]
 
 // [START generateThumbnail]
 // * When an image is uploaded in the Storage bucket We generate a thumbnail automatically using
 // * ImageMagick.
 // [START generateThumbnailTrigger]
-exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
+/*exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
 // [END generateThumbnailTrigger]
   // [START eventAttributes]
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
@@ -63,69 +62,73 @@ exports.generateThumbnail = functions.storage.object().onFinalize(async (object)
   // Once the thumbnail has been uploaded delete the local file to free up disk space.
   return fs.unlinkSync(tempFilePath);
   // [END thumbnailGeneration]
-});
+});*/
 
 
 //1. 관리자 로그인 요청주소 : POST/login
-exports.adminlogin =functions.https.onRequest((req, res) => {
-    
-    var body = req.body;
-    if (req.method ==='POST'){
-        var requid = body.token;
-        if (requid === '73cxqheH7nMwI2Gj91ojCEfm1j73'){
-         res.send("true");   
-            
+exports.adminlogin = functions.https.onRequest((req, res) => {
+
+  var body = req.body;
+  if (req.method === 'POST') {
+    admin.auth().verifyIdToken(body.token)
+      .then(function(decodedToken) {
+        let uid = decodedToken.uid;
+        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
+          res.send("true");
+        } else {
+          throw new Error("Invalid uid");
         }
-        else{
-            res.send("false");
-        }
-    }
-    
+        return uid;
+      }).catch(function(error) {
+        res.send("false");
+      });
+  }
+
 });
 //2. 웹->서버 기프티콘 전달 요청주소 POST/gifrticons/register
 /*
 exports.webtoservergift =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //3. 서버->웹 기프티콘 리스트 전달 요청주소 POST/gifticons/list
 exports.servertowebgift =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //4. 기프티콘 특정 Type 정보 전달 요청주소 POST/gifticons/detail
 exports.gtype =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //5. 기프티콘 삭제 요청 요청주소 POST/gifticons/remove
 exports.gdelete =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //클라이언트 ==================================================================
 
 //1. 최초 가입 : wallet address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
 exports.signup  =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //2. 추천인 입력 : 추천인 입력 받아 확인 후에 맞을 시 토큰 지급
 exports.recommend =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 //3. 기프티콘 구매 부분.
 exports.gifticonMain =functions.https.onRequest((req, res) => {
-    
-    
-    
+
+
+
 });
 
 */

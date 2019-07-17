@@ -6,8 +6,7 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "redirects": [
-      {
+    "redirects": [{
         "source": "/admin",
         "destination": "/admin.html",
         "type": 301
@@ -18,10 +17,13 @@
         "type": 301
       }
     ],
-    "rewrites": [
-      {
+    "rewrites": [{
         "source": "/helloWorld",
         "function": "helloWorld"
+      },
+      {
+        "source": "/login",
+        "function": "adminlogin"
       }
     ]
   },
