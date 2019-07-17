@@ -22,7 +22,7 @@
         "function": "helloWorld"
       },
       {
-        "source": "/login",
+        "source": "/adminlogin",
         "function": "adminlogin"
       }
     ]

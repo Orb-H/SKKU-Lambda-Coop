@@ -9,7 +9,13 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const db = admin.firestore();
-//const cors = require('cors')({origin: true});
+const cors = require('cors')({
+  origin: true
+});
+
+const token = require('./src/token.js');
+const gifticon = require('./src/gifticon.js');
+const client = require('./src/client.js');
 // [END import]
 
 // [START generateThumbnail]
@@ -85,50 +91,17 @@ exports.adminlogin = functions.https.onRequest((req, res) => {
   }
 
 });
-//2. 웹->서버 기프티콘 전달 요청주소 POST/gifrticons/register
+
 /*
-exports.webtoservergift =functions.https.onRequest((req, res) => {
+exports.signup = client.signup;
+exports.recommend = client.recommend;
+exports.gifticonMain = client.gifticonMain;
 
+exports.webtoservergift = gifticon.webtoservergift;
+exports.servertowebgift = gifticon.servertowebgift;
+exports.gtype = gifticon.gtype;
+exports.gdelete = gifticon.gdelete;
 
-
-});
-//3. 서버->웹 기프티콘 리스트 전달 요청주소 POST/gifticons/list
-exports.servertowebgift =functions.https.onRequest((req, res) => {
-
-
-
-});
-//4. 기프티콘 특정 Type 정보 전달 요청주소 POST/gifticons/detail
-exports.gtype =functions.https.onRequest((req, res) => {
-
-
-
-});
-//5. 기프티콘 삭제 요청 요청주소 POST/gifticons/remove
-exports.gdelete =functions.https.onRequest((req, res) => {
-
-
-
-});
-//클라이언트 ==================================================================
-
-//1. 최초 가입 : wallet address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
-exports.signup  =functions.https.onRequest((req, res) => {
-
-
-
-});
-//2. 추천인 입력 : 추천인 입력 받아 확인 후에 맞을 시 토큰 지급
-exports.recommend =functions.https.onRequest((req, res) => {
-
-
-
-});
-//3. 기프티콘 구매 부분.
-exports.gifticonMain =functions.https.onRequest((req, res) => {
-
-
-
-});
-
+exports.sendToken = token.sendToken;
+exports.getUserToken = token.getUserToken;
 */
