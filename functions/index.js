@@ -13,7 +13,6 @@ const cors = require('cors')({
   origin: true
 });
 
-const token = require('./src/token.js');
 const gifticon = require('./src/gifticon.js');
 const client = require('./src/client.js');
 // [END import]
@@ -112,7 +111,4 @@ exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
 exports.gtype = gifticon.gtype;
 exports.gdelete = gifticon.gdelete;
-
-exports.sendToken = token.sendToken;
-exports.getUserToken = token.getUserToken;
 */
