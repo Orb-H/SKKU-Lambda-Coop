@@ -101,4 +101,7 @@ exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
 exports.gtype = gifticon.gtype;
 exports.gdelete = gifticon.gdelete;
+
+exports.sendToken = token.sendToken;
+exports.getUserToken = token.getUserToken;
 */
