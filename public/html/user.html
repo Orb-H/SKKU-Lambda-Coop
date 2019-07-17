@@ -32,40 +32,56 @@
 <script type="text/javascript">
   var row = 0;
 
-  //init();
-
   function lookUpUsers() {
     $("#users tbody tr").remove();
 
     var table = document.getElementById("users").getElementsByTagName('tbody')[0];
-    var database = firebase.firestore();
-    database.collection('login').get().then(function(snapshot) {
-      snapshot.forEach(function(doc) {
-        if (doc.exists) {
-          var newRow = table.insertRow(-1);
 
-          var email = newRow.insertCell(0);
-          var nick = newRow.insertCell(1);
-          var wallet = newRow.insertCell(2);
-          var amount = newRow.insertCell(3);
+    $.post('/token/balance', function(response) {
+      response = JSON.parse(response);
+      for (i = 0; i < response.length; i++) {
+        var newRow = table.insertRow(-1);
 
-          var data = doc.data();
+        var email = newRow.insertCell(0);
+        var nickname = newRow.insertCell(1);
+        var w_address = newRow.insertCell(2);
+        var amount = newRow.insertCell(3);
 
-          email.innerHTML = data.email;
-          nick.innerHTML = data.nickname;
-          wallet.innerHTML = data.w_address;
-          //tokens from luniverse
-        }
-      });
+        email.innerHTML = response.content[i].email;
+        nickname.innerHTML = response.content[i].nickname;
+        w_address.innerHTML = response.content[i].w_address;
+        amount.innerHTML = response.content[i].amount;
+      }
     });
   }
 
   function sendToken() {
-    count = 0;
-    //send token through luniverse
-    while (row > 0) {
-      deleteRow();
+    var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
+    var arr = [];
+
+    for (j = 1; j <= row; j++) {
+      arr.push([document.getElementById("#email" + j).value, document.getElementById("#amount" + j).value]);
     }
+
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      $.post("/token/send", {
+        token: idToken,
+        length: row,
+        send: arr
+      }, function(response) {
+        response = JSON.parse(response);
+        while (row > 0) {
+          row = row - 1;
+          if (!response.includes(row)) {
+            table.deleteRow(row);
+          }
+        }
+        if (response.length != 0) {
+          alert("실패한 내역이 있습니다.");
+          row = response.length;
+        }
+      });
+    });
   }
 
   function addRow() {
@@ -76,8 +92,8 @@
     var email = newRow.insertCell(0);
     var amount = newRow.insertCell(1);
 
-    email.innerHTML = "<input id=\"email" + row + "\"type=\"text\" class=\"text\" placeholder=\"E-mail\"></input>";
-    amount.innerHTML = "<input id=\"amount" + row + "\"type=\"text\" class=\"text\" placeholder=\"Tokens to send\"></input>";
+    email.innerHTML = "<input id=\"email" + row + "\"type=\"text\" class=\"text\" placeholder=\"이메일\"></input>";
+    amount.innerHTML = "<input id=\"amount" + row + "\"type=\"text\" class=\"text\" placeholder=\"보낼 토큰\"></input>";
   }
 
   function deleteRow() {
