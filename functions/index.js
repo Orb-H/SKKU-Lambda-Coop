@@ -13,7 +13,6 @@ const cors = require('cors')({
   origin: true
 });
 
-const token = require('./src/token.js');
 const gifticon = require('./src/gifticon.js');
 const client = require('./src/client.js');
 // [END import]
@@ -76,21 +75,32 @@ exports.adminlogin = functions.https.onRequest((req, res) => {
 
   var body = req.body;
   if (req.method === 'POST') {
-    admin.auth().verifyIdToken(body.token)
-      .then(function(decodedToken) {
-        let uid = decodedToken.uid;
-        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
-          res.send("true");
-        } else {
-          throw new Error("Invalid uid");
-        }
-        return uid;
-      }).catch(function(error) {
+    exports.checkadmin(body.token).then(admin => {
+      if (admin) {
+        res.send("true");
+      } else {
         res.send("false");
-      });
+      }
+    });
   }
 
 });
+
+exports.checkadmin = function(token) {
+  return new Promise((resolve, reject) => {
+    admin.auth().verifyIdToken(token)
+      .then(function(decodedToken) {
+        let uid = decodedToken.uid;
+        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
+          resolve(true);
+        } else {
+          throw new Error("Invalid uid");
+        }
+      }).catch(function(error) {
+        resolve(false);
+      });
+  });
+}
 
 /*
 exports.signup = client.signup;
@@ -101,7 +111,4 @@ exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
 exports.gtype = gifticon.gtype;
 exports.gdelete = gifticon.gdelete;
-
-exports.sendToken = token.sendToken;
-exports.getUserToken = token.getUserToken;
 */

@@ -24,11 +24,12 @@
   <table border=0 cellspacing=0 id="gifticons">
     <thead>
       <tr>
-        <td>Type</td>
+        <td>대분류</td>
+        <td>소분류</td>
         <td>이름</td>
         <td>가격</td>
         <td>재고</td>
-        <td>기프티콘 상세정보</td>
+        <td>상세정보</td>
       </tr>
     </thead>
     <tbody>
@@ -37,7 +38,7 @@
 </p>
 <p id="detaillookup">
   <h4>기프티콘 상세 정보</h4>
-  <h4 id="gifticoninfo"></h4>
+  <div id="gifticoninfo">기프티콘 종류:</div>
   <table id="gifticondetail">
     <thead>
       <tr>
@@ -56,27 +57,36 @@
   <table>
     <thead>
       <tr>
-        <td>Type</td>
+        <td>대분류</td>
+        <td>소분류</td>
         <td>이름</td>
-        <td>이미지</td>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>
-          <input type="text" id="gifttype" class="gifttype text" placeholder="Type" />
+          <input type="text" id="giftcategory1" class="text" placeholder="대분류" />
         </td>
         <td>
-          <input type="text" id="giftname" class="giftname text" placeholder="Name(Optional)" />
+          <input type="text" id="giftcategory2" class="text" placeholder="소분류" />
         </td>
         <td>
-          <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-          <p id="images" style="margin:0px"></p>
+          <input type="text" id="giftname" class="text" placeholder="이름" />
         </td>
       </tr>
     </tbody>
   </table>
-  * 새로운 종류의 기프티콘을 추가하는 경우에만 이름을 입력합니다.
+  <table>
+    <tr>
+      <td width=50%>
+        이미지<input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
+        이미지<input type="file>"
+      </td>
+      <td>
+        <p id="images" style="margin:0px"></p>
+      </td>
+    </tr>
+  </table>
   <p>
     <button id="addGift" onclick="sendItem()">추가</button>
   </p>
@@ -97,32 +107,37 @@
         for (i = 0; i < response.length; i++) {
           var newRow = table.insertRow(-1);
 
-          var type = newRow.insertCell(0);
-          var name = newRow.insertCell(1);
-          var cost = newRow.insertCell(2);
-          var count = newRow.insertCell(3);
-          var button = newRow.insertCell(4);
+          var name = newRow.insertCell(0);
+          var category1 = newRow.insertCell(1);
+          var category2 = newRow.insertCell(2);
+          var cost = newRow.insertCell(3);
+          var count = newRow.insertCell(4);
+          var button = newRow.insertCell(5);
 
-          type.innerHTML = response.content[i].type;
           name.innerHTML = response.content[i].name;
+          category1.innerHTML = response.content[i].category1;
+          category2.innerHTML = response.content[i].category2;
           cost.innerHTML = response.content[i].cost;
           count.innerHTML = response.content[i].count;
-          button.innerHTML = "<button onclick=detailLookUpItems(" + response.content[i].type + ")>상세 정보 조회</button>";
+          button.innerHTML = "<button onclick=detailLookUpItems(" + response.content[i].category1 + "," + response.content[i].category2 + "," + response.content[i].name + ")>조회</button>";
         }
       });
     });
   }
 
-  function detailLookUpItems(gifttype) {
+  function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
     $("#gifticondetail tbody tr").remove();
 
     var table = document.getElementById("gifticondetail").getElementsByTagName('tbody')[0];
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
       $.post("/gifticons/detail", {
         token: idToken,
-        type: gifttype
+        name: giftname,
+        category1: giftcategory1,
+        category2: giftcategory2
       }, function(response) {
         response = JSON.parse(response);
+        $("#gifticon").html("기프티콘 종류: " + giftcategory1 + "/" + giftcategory2 + "/" + giftname);
         for (i = 0; i < response.length; i++) {
           var newRow = table.insertRow(-1);
 
@@ -131,10 +146,10 @@
           var used = newRow.insertCell(2);
           var del = newRow.insertCell(3);
 
-          number.innerHTML = response.content[i].number;
+          number.innerHTML = response.content[i].id;
           image.innerHTML = "<img src=" + response.content[i].image + " />";
           used.innerHTML = (response.content[i].used === "true" ? "<font color=red>사용</font>" : "<font color=green>미사용</font>");
-          del.innerHTML = "<button onclick=removeItem(" + response.content[i].number + ")>삭제</button>";
+          del.innerHTML = "<button onclick=removeItem(" + response.content[i].id + ")>삭제</button>";
         }
       });
     });
@@ -147,7 +162,7 @@
         var reader = new FileReader();
 
         reader.onload = function(e) {
-          document.getElementById("images").innerHTML += ("<p><img src=" + e.target.result + " width=150 /></p>");
+          document.getElementById("images").innerHTML += ("<img src=" + e.target.result + " width=150 />");
         };
 
         reader.readAsDataURL(input.files[i]);
@@ -159,7 +174,8 @@
 
   function sendItem() {
     var database = firebase.database();
-    var gifttype = document.getElementById("gifttype");
+    var giftcategory1 = document.getElementById("giftcategory1");
+    var giftcategory2 = document.getElementById("giftcategory2");
     var giftname = document.getElementById("giftname");
     var input = document.getElementById("files");
 
@@ -174,18 +190,21 @@
           encoding.push(result);
 
           if (encoding.length === length) {
-            $.post("/gifticons/register", {
-              type: gifttype.value,
-              name: giftname.value,
-              length: input.files.length,
-              images: encoding
-            }, function(result) {
-              if (result === "true") {
-                alert("등록 성공!");
-              } else {
-                alert("등록 실패!");
-              }
-            });
+            firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+              $.post("/gifticons/register", {
+                name: giftname.value,
+                category1: giftcategory1,
+                category2: giftcategory2,
+                length: input.files.length,
+                images: encoding
+              }, function(result) {
+                if (result === "true") {
+                  alert("등록 성공!");
+                } else {
+                  alert("등록 실패!");
+                }
+              });
+            })
           }
         };
         reader.readAsDataURL(input.files[i]);
@@ -195,22 +214,16 @@
 
   function removeItem(giftnumber) {
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-        $.post("/gifticons/remove", {
-            token: idToken,
-            number: giftnumber
-          }, function(response) {
-            if (response === "true") {
-              alert("삭제 성공!");
-            } else {
-              alert("삭제 실패");
-            }
-          }
-        });
+      $.post("/gifticons/remove", {
+        token: idToken,
+        id: giftnumber
+      }, function(response) {
+        if (response === "true") {
+          alert("삭제 성공!");
+        } else {
+          alert("삭제 실패");
+        }
+      });
     });
   }
-
-  /*function init() {
-    lookUpitems();
-    setInterval("lookUpItems()", 3600000);
-  }*/
 </script>
