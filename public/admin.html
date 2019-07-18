@@ -18,6 +18,7 @@
   <!-- initialize the SDK after all desired features are loaded -->
   <script src="/__/firebase/init.js"></script>
 
+  <script src="js/config.js"></script>
   <script type="text/javascript">
     var lastScrollTop = 0;
     var curPage = -1;
@@ -36,6 +37,13 @@
           console.log("unauth");
           location.href = "/";
         }
+      });
+      firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+        $.post("/getapikey", {
+          token: idToken,
+        }, function(response) {
+          config.dapp.apiKey = response;
+        });
       });
 
       $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fhtml%2Fgifticon.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {

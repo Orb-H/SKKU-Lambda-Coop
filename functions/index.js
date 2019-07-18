@@ -72,7 +72,6 @@ const client = require('./src/client.js');
 
 //1. 관리자 로그인 요청주소 : POST/login
 exports.adminlogin = functions.https.onRequest((req, res) => {
-
   var body = req.body;
   if (req.method === 'POST') {
     exports.checkadmin(body.token).then((admin) => {
@@ -84,7 +83,20 @@ exports.adminlogin = functions.https.onRequest((req, res) => {
       return admin;
     }).catch((error) => {});
   }
+});
 
+exports.getApiKey = functions.https.onRequest((req, res) => {
+  var body = req.body;
+  if (req.method === 'POST') {
+    exports.checkadmin(body.token).then((admin) => {
+      if (admin) {
+        res.send("9d6mUgGSFEE2BesmdLUWdC75aL4mtFrW2spEVGWRNrY33oXrB4wwgcccMAA8F8Xx");
+      } else {
+        res.status(400).send("invalid content");
+      }
+      return admin;
+    }).catch((error) => {});
+  }
 });
 
 exports.checkadmin = function(token) {

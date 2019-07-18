@@ -10,7 +10,7 @@ const config = {
     system: '0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2',
   },
   dapp: {
-    apiKey: '9d6mUgGSFEE2BesmdLUWdC75aL4mtFrW2spEVGWRNrY33oXrB4wwgcccMAA8F8Xx'
+    apiKey: ''
   },
   txActionName: {
     adminSend: "adminSend"

@@ -18,12 +18,12 @@
       }
     ],
     "rewrites": [{
-        "source": "/helloWorld",
-        "function": "helloWorld"
-      },
-      {
         "source": "/adminlogin",
         "function": "adminlogin"
+      },
+      {
+        "source": "/getapikey",
+        "function": "getApiKey"
       }
     ]
   },
