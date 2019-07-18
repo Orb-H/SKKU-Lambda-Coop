@@ -75,30 +75,31 @@ exports.adminlogin = functions.https.onRequest((req, res) => {
 
   var body = req.body;
   if (req.method === 'POST') {
-    exports.checkadmin(body.token).then(admin => {
+    exports.checkadmin(body.token).then((admin) => {
       if (admin) {
         res.send("true");
       } else {
         res.send("false");
       }
-    });
+      return admin;
+    }).catch((error) => {});
   }
 
 });
 
 exports.checkadmin = function(token) {
   return new Promise((resolve, reject) => {
-    admin.auth().verifyIdToken(token)
-      .then(function(decodedToken) {
-        let uid = decodedToken.uid;
-        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
-          resolve(true);
-        } else {
-          throw new Error("Invalid uid");
-        }
-      }).catch(function(error) {
-        resolve(false);
-      });
+    admin.auth().verifyIdToken(token).then((decodedToken) => {
+      let uid = decodedToken.uid;
+      if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
+        resolve(true);
+      } else {
+        throw new Error("Invalid uid");
+      }
+      return uid;
+    }).catch((error) => {
+      resolve(false);
+    });
   });
 }
 
