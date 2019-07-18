@@ -25,25 +25,48 @@
     init();
 
     function init() {
+      var buttons = document.getElementsByTagName('button');
+      for (i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        button.classList.add('disabled');
+      }
+
       if (!!firebase.auth().currentUser) {
         console.log("exist");
+        firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+          $.post("/getapikey", {
+            token: idToken,
+          }, function(response) {
+            config.dapp.apiKey = response;
+            var buttons = document.getElementsByTagName('button');
+            for (i = 0; i < buttons.length; i++) {
+              var button = buttons[i];
+              button.classList.remove('disabled');
+            }
+          });
+        });
         loadReadme();
       }
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           console.log("re-authed");
+          firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+            $.post("/getapikey", {
+              token: idToken,
+            }, function(response) {
+              config.dapp.apiKey = response;
+              var buttons = document.getElementsByTagName('button');
+              for (i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                button.classList.remove('disabled');
+              }
+            });
+          });
           loadReadme();
         } else {
           console.log("unauth");
           location.href = "/";
         }
-      });
-      firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-        $.post("/getapikey", {
-          token: idToken,
-        }, function(response) {
-          config.dapp.apiKey = response;
-        });
       });
 
       $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fhtml%2Fgifticon.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
@@ -111,6 +134,8 @@
       lastScrollTop = st;
     });
   </script>
+  <script type="text/javascript" src="js/gifticon.js"></script>
+  <script type="text/javascript" src="js/user.js"></script>
 
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
