@@ -60,24 +60,32 @@
         <td>대분류</td>
         <td>소분류</td>
         <td>이름</td>
-        <td>이미지</td>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>
-          <input type="text" id="giftcategory1" class="text" placeholder="대분류" </td> <td>
+          <input type="text" id="giftcategory1" class="text" placeholder="대분류" />
+        </td>
+        <td>
           <input type="text" id="giftcategory2" class="text" placeholder="소분류" />
         </td>
         <td>
           <input type="text" id="giftname" class="text" placeholder="이름" />
         </td>
-        <td>
-          <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-          <p id="images" style="margin:0px"></p>
-        </td>
       </tr>
     </tbody>
+  </table>
+  <table>
+    <tr>
+      <td width=50%>
+        이미지<input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
+        이미지<input type="file>"
+      </td>
+      <td>
+        <p id="images" style="margin:0px"></p>
+      </td>
+    </tr>
   </table>
   <p>
     <button id="addGift" onclick="sendItem()">추가</button>
@@ -154,7 +162,7 @@
         var reader = new FileReader();
 
         reader.onload = function(e) {
-          document.getElementById("images").innerHTML += ("<p><img src=" + e.target.result + " width=150 /></p>");
+          document.getElementById("images").innerHTML += ("<img src=" + e.target.result + " width=150 />");
         };
 
         reader.readAsDataURL(input.files[i]);
@@ -206,22 +214,16 @@
 
   function removeItem(giftnumber) {
     firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-        $.post("/gifticons/remove", {
-            token: idToken,
-            id: giftnumber
-          }, function(response) {
-            if (response === "true") {
-              alert("삭제 성공!");
-            } else {
-              alert("삭제 실패");
-            }
-          }
-        });
+      $.post("/gifticons/remove", {
+        token: idToken,
+        id: giftnumber
+      }, function(response) {
+        if (response === "true") {
+          alert("삭제 성공!");
+        } else {
+          alert("삭제 실패");
+        }
+      });
     });
   }
-
-  /*function init() {
-    lookUpitems();
-    setInterval("lookUpItems()", 3600000);
-  }*/
 </script>

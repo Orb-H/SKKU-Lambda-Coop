@@ -144,6 +144,10 @@ a:hover {
   border: solid 1px #072a60;
 }
 
+.text.invalid {
+  border: solid 1px #ff0000;
+}
+
 .samlltext {
   font-size: 12px;
 }
