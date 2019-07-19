@@ -2,11 +2,11 @@
 
 <head>
 	<title>SKKoin Adminstrator Login page</title>
-	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-	<link rel="manifest" href="/site.webmanifest">
-	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#072a60">
+	<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+	<link rel="manifest" href="/img/site.webmanifest">
+	<link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#072a60">
 	<meta name="msapplication-TileColor" content="#072a60">
 	<meta name="theme-color" content="#ffffff">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -34,7 +34,7 @@
 			</span>
 		</div>
 	</header>
-	<form align=center id="form" class="form" method="post">
+	<form align=center style="margin-top:120px;">
 		<image src="img/skkoin_icon.svg" width=200 />
 		<p />
 		<h1 style="font-size:50px;">SKKOIN</h1>
@@ -44,7 +44,7 @@
 		<p />
 		<input type="button" name="login" id="login" class="button" value="로그인" onclick="signIn()" />
 	</form>
-	<p id="already" align=center>You will be redirected to the admin page soon.</p>
+	<p id="loginmessage" align=center></p>
 </body>
 
 </html>
