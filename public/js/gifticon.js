@@ -1,3 +1,7 @@
+var curcategory1 = '';
+var curcategory2 = '';
+var curname = '';
+
 function lookUpItems() {
   $("#gifticons tbody tr").remove();
 
@@ -41,6 +45,9 @@ function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
     }, function(response) {
       response = JSON.parse(response);
       $("#gifticon").html("기프티콘 종류: " + giftcategory1 + "/" + giftcategory2 + "/" + giftname);
+      curcategory1 = giftcategory1;
+      curcategory2 = giftcategory2;
+      curname = giftname;
       for (i = 0; i < response.length; i++) {
         var newRow = table.insertRow(-1);
 
@@ -123,6 +130,7 @@ function removeItem(giftnumber) {
     }, function(response) {
       if (response === "true") {
         alert("삭제 성공!");
+        detailLookUpItems(curcategory1, curcategory2, curname);
       } else {
         alert("삭제 실패");
       }
