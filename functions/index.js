@@ -2,19 +2,18 @@
 
 // [START import]
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp()
 //const spawn = require('child-process-promise').spawn;
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const db = admin.firestore();
 const cors = require('cors')({
   origin: true
 });
 
+const login = require('./src/login.js');
 const gifticon = require('./src/gifticon.js');
 const client = require('./src/client.js');
+const token = require('./src/token.js');
 // [END import]
 
 // [START generateThumbnail]
@@ -71,57 +70,15 @@ const client = require('./src/client.js');
 
 
 //1. 관리자 로그인 요청주소 : POST/login
-exports.adminlogin = functions.https.onRequest((req, res) => {
-  var body = req.body;
-  if (req.method === 'POST') {
-    exports.checkadmin(body.token).then((admin) => {
-      if (admin) {
-        res.send("true");
-      } else {
-        res.send("false");
-      }
-      return admin;
-    }).catch((error) => {});
-  }
-});
-
-exports.getApiKey = functions.https.onRequest((req, res) => {
-  var body = req.body;
-  if (req.method === 'POST') {
-    exports.checkadmin(body.token).then((admin) => {
-      if (admin) {
-        res.send("9d6mUgGSFEE2BesmdLUWdC75aL4mtFrW2spEVGWRNrY33oXrB4wwgcccMAA8F8Xx");
-      } else {
-        res.status(400).send("invalid content");
-      }
-      return admin;
-    }).catch((error) => {});
-  }
-});
-
-exports.checkadmin = function(token) {
-  return new Promise((resolve, reject) => {
-    admin.auth().verifyIdToken(token).then((decodedToken) => {
-      let uid = decodedToken.uid;
-      if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
-        resolve(true);
-      } else {
-        throw new Error("Invalid uid");
-      }
-      return uid;
-    }).catch((error) => {
-      resolve(false);
-    });
-  });
-}
-
+exports.adminlogin = login.adminlogin;
+exports.getApiKey = login.getApiKey;
+exports.checkadmin = login.checkadmin;
 /*
 exports.signup = client.signup;
 exports.recommend = client.recommend;
 exports.gifticonMain = client.gifticonMain;
-
-exports.webtoservergift = gifticon.webtoservergift;
-exports.servertowebgift = gifticon.servertowebgift;
-exports.gtype = gifticon.gtype;
-exports.gdelete = gifticon.gdelete;
 */
+//exports.webtoservergift = gifticon.webtoservergift;
+exports.servertowebgift = gifticon.servertowebgift;
+//exports.gtype = gifticon.gtype;
+//exports.gdelete = gifticon.gdelete;

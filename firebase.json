@@ -24,6 +24,22 @@
       {
         "source": "/getapikey",
         "function": "getApiKey"
+      },
+      {
+        "source": "/gifticons/register",
+        "function": "webtoservergift"
+      },
+      {
+        "source": "/gifticon_list",
+        "function": "servertowebgift"
+      },
+      {
+        "source": "/gifticons/detail",
+        "function": "gtype"
+      },
+      {
+        "source": "/gifticons/remove",
+        "function": "gdelete"
       }
     ]
   },
