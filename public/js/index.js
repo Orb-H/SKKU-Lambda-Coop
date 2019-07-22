@@ -7,6 +7,7 @@ function signIn() {
   } else if (pw == '') {
     alert('Fill PW');
   } else {
+    $("#loginmessage").html("Logging in...");
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
       .then(function() {
         return firebase.auth().signInWithEmailAndPassword(id, pw)
@@ -42,17 +43,17 @@ function init() {
           token: idToken
         }, function(response) {
           if (response === 'true') {
-            $('#already').show();
+            $('#loginmessage').html("You will redirected to the admin page soon.");
             $('#login').attr('disabled', true);
             location.href = "admin.html";
           } else {
+            $('#loginmessage').html("");
             alert("Is this administrator's account??");
             firebase.auth().signOut();
           }
         });
       });
     } else {
-      $('#already').hide();
       $('#login').attr('disabled', false);
     }
   });
@@ -64,7 +65,7 @@ $(document).ready(function() {
   document.getElementById('ID').addEventListener("keyup", function(event) {
     if (event.keyCode === 13) {
       event.preventDefault();
-      signIn();
+      document.getElementById('PW').focus();
     }
   });
   document.getElementById('PW').addEventListener("keyup", function(event) {
@@ -72,5 +73,5 @@ $(document).ready(function() {
       event.preventDefault();
       signIn();
     }
-  })
+  });
 });
