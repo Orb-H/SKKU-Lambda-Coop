@@ -33,6 +33,7 @@ b {
 
 a {
   color: #0366d6;
+  text-decoration: none;
 }
 
 span {
@@ -68,6 +69,7 @@ a:hover {
 .container {
   width: 980px;
   margin: auto;
+  box-sizing: border-box;
 }
 
 .menu {
@@ -104,6 +106,13 @@ a:hover {
   width: 100%;
   align-content: center;
   box-sizing: border-box;
+}
+
+.contentimage {
+  border: solid 1px #999;
+  margin: 15px 0px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .button {
@@ -203,7 +212,7 @@ button {
   color: #fff;
   border: 0px;
   padding: 5px 10px;
-  margin: 5px;
+  margin: 5px 10px 5px 0px;
   border: solid 1px #fff;
 }
 
