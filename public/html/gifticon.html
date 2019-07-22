@@ -1,92 +1,79 @@
 <h1>기프티콘 관리</h1>
-<ol>
-  <li>
-    기프티콘 조회
-    <ol type="A">
-      <li>
-        <a href="#lookup">기프티콘 조회</a>
-      </li>
-      <li>
-        <a href="#detaillookup">기프티콘 상세 정보</a>
-      </li>
-    </ol>
-  </li>
-  <li>
-    <a href="#add">기프티콘 추가</a>
-  </li>
-</ol>
-<hr />
-<p id="lookup">
+<div>
   <h2>기프티콘 목록</h2>
-  <p>
-    <button id="giftlookup">조회</button>
-  </p>
-  <table border=0 cellspacing=0 id="gifticons">
-    <thead>
-      <tr>
-        <td>대분류</td>
-        <td>소분류</td>
-        <td>이름</td>
-        <td>가격</td>
-        <td>재고</td>
-        <td>상세정보</td>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</p>
-<p id="detaillookup">
-  <h4>기프티콘 상세 정보</h4>
-  <div id="gifticoninfo">기프티콘 종류:</div>
-  <table id="gifticondetail">
-    <thead>
-      <tr>
-        <td>기프티콘 ID</td>
-        <td>이미지</td>
-        <td>지급 여부</td>
-        <td>삭제</td>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</p>
-<p id="add">
+  <div>
+    <table border=0 cellspacing=0 id="gifticons">
+      <thead>
+        <tr>
+          <td>대분류</td>
+          <td>소분류</td>
+          <td>이름</td>
+          <td>가격</td>
+          <td>재고</td>
+          <td>상세정보</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button onclick="lookUpItems()">조회</button>
+  </div>
+  <div>
+    <h4>기프티콘 상세 정보</h4>
+    <div>
+      <div id="gifticoninfo">기프티콘 종류:</div>
+      <table id="gifticondetail">
+        <thead>
+          <tr>
+            <td>기프티콘 ID</td>
+            <td>이미지</td>
+            <td>지급 여부</td>
+            <td>삭제</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div>
   <h2>기프티콘 추가</h2>
-  <table>
-    <thead>
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <td>대분류</td>
+          <td>소분류</td>
+          <td>이름</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <input type="text" id="giftcategory1" class="text" placeholder="대분류" />
+          </td>
+          <td>
+            <input type="text" id="giftcategory2" class="text" placeholder="소분류" />
+          </td>
+          <td>
+            <input type="text" id="giftname" class="text" placeholder="이름" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table>
       <tr>
-        <td>대분류</td>
-        <td>소분류</td>
-        <td>이름</td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <input type="text" id="giftcategory1" class="text" placeholder="대분류" />
+        <td width=50%>
+          이미지<input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
         </td>
         <td>
-          <input type="text" id="giftcategory2" class="text" placeholder="소분류" />
-        </td>
-        <td>
-          <input type="text" id="giftname" class="text" placeholder="이름" />
+          <p id="images" style="margin:0px"></p>
         </td>
       </tr>
-    </tbody>
-  </table>
-  <table>
-    <tr>
-      <td width=50%>
-        이미지<input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-      </td>
-      <td>
-        <p id="images" style="margin:0px"></p>
-      </td>
-    </tr>
-  </table>
-  <p>
-    <button id="addGift" onclick="sendItem()">추가</button>
-  </p>
-</p>
+    </table>
+    <div>
+      <button onclick="sendItem()">추가</button>
+    </div>
+  </div>
+</div>

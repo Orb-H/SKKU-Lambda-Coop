@@ -1,29 +1,35 @@
 <h1>사용자 관리</h1>
-<p>
+<div>
   <h2>사용자 목록</h2>
-  <table border=0 cellspacing=0 id="users">
-    <thead>
-      <tr>
-        <td>이메일</td>
-        <td>닉네임</td>
-        <td>지갑 주소</td>
-        <td>현재 토큰</td>
-      <tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <button onclick="lookUpUsers()">조회</button>
+  <div>
+    <table border=0 cellspacing=0 id="users">
+      <thead>
+        <tr>
+          <td>이메일</td>
+          <td>닉네임</td>
+          <td>지갑 주소</td>
+          <td>현재 토큰</td>
+        <tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button onclick="lookUpUsers()">조회</button>
+  </div>
+</div>
+<div>
   <h2>토큰 송금</h2>
-  <table border=0 cellspacing=0 id="sendtoken">
-    <thead>
-      <tr>
-        <td>이메일</td>
-        <td>보낼 양</td>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <button onclick="addRow()">행 추가</button><button onclick="deleteRow()">행 삭제</button><button onclick="sendToken()">토큰 전송</button>
-</p>
+  <div>
+    <table border=0 cellspacing=0 id="sendtoken">
+      <thead>
+        <tr>
+          <td>이메일</td>
+          <td>보낼 양</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button onclick="addRow()">행 추가</button><button onclick="deleteRow()">행 삭제</button><button onclick="sendToken()">토큰 전송</button>
+  </div>
+</div>
