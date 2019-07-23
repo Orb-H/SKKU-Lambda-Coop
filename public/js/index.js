@@ -42,13 +42,13 @@ function init() {
         $.post('/adminlogin', {
           token: idToken
         }, function(response) {
-          if (response === 'true') {
+          response = JSON.parse(response);
+          if (response.result === true) {
             $('#loginmessage').html("You will redirected to the admin page soon.");
             $('#login').attr('disabled', true);
             location.href = "admin.html";
           } else {
-            $('#loginmessage').html("");
-            alert("Is this administrator's account??");
+            $('#loginmessage').html(response.data.message);
             firebase.auth().signOut();
           }
         });
