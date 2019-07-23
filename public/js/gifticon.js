@@ -7,7 +7,7 @@ function lookUpItems() {
 
   var table = document.getElementById("gifticons").getElementsByTagName('tbody')[0];
   firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-    $.post("/gifticon_list", {
+    $.post("/gifticon/list", {
       token: idToken,
     }, function(response) {
       response = JSON.parse(response);
