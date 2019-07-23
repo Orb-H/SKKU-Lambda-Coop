@@ -24,7 +24,7 @@ module.exports = {
     if (req.method === 'POST') {
       module.exports.checkadmin(body.token).then((admin) => {
         if (admin) {
-          res.send("9d6mUgGSFEE2BesmdLUWdC75aL4mtFrW2spEVGWRNrY33oXrB4wwgcccMAA8F8Xx");
+          res.send(process.env.luniverse);
         } else {
           res.status(401).send('');
         }
@@ -37,7 +37,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       auth.verifyIdToken(token).then((decodedToken) => {
         let uid = decodedToken.uid;
-        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
+        if (uid === process.env.system) {
           resolve(true);
         } else {
           throw new Error("Invalid uid");

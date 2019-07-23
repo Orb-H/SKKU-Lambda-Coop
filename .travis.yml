@@ -1,4 +1,4 @@
-language: node_js
+language:         node_js
 node_js:
   - "10.16.0"
 
@@ -15,6 +15,14 @@ script:
   - echo "Deploy!!"
 
 deploy:
-  provider: firebase
-  skip_cleanup: true
-  token: $FIREBASE_TOKEN
+  provider:       firebase
+  skip_cleanup:   true
+  token:          $FIREBASE_TOKEN
+
+env:
+  luniverse:
+    secure:
+      "O3GXYq75yofyZyPyBHkRe4UJ9Ud4Oc3EGaRV8YHnuBAev6SBE544XGCFC3Q8TmRhMaBXMk0bnASYlU8PPgsPhgThaPyC5selTnpf0rCwJnwWc9uznIjRWnRdOsmnyS3jYa5EXvE1IRSAHYkrHBY5QpO4si5yBcwU5LLbjCaLDxBHDHbJnJpV9GeF14HPq8ZdCgpUAEEmW16TE6hio9vkky2GcynXB1t90+EtRGZwLxJ4Zsw3PeUI4AWzEita4c8NDzlQm+cNcwTsTtBIFrEGf/32eT8cpdZlgp1Woy8Au/8qLCvA71+PhBPa82TG8G6Nm0OyMA03mhAiRKWPu9TC1ccmlIlBJbXRjo00EC51Cep5AdrnwtRfE8T/M7qwhm2uoQD9W0DeO0DCIFcplxBSt1eTbcMwhwx1EOhesbVipCKDsG3UaANt/Ep/xBENNPhwbt94bgY8eK1/IC9scosXYTjmy8/Y+BZbeNj+u760YCHLyVHoALUVs+nknJP8kgXU+3aLtum1kSrqwpkTZK/XPcLTeMV1ZFbkbpQn5CqXxT8u2UDHc2anw9WWKCWXfoeJUc0VOTGW1Qz97q1L5fecHlu+uXqJ1xwgYjJUsS1t1PQsAv4cPkhTn/2qylQcmy8YZ/dJ7kGGeW1dsnvjnbbTfhui2+pBE4o9HFQQdqtizOM="
+  system:
+    secure:
+      "NirWNorJ2zayPQyKmWs/dt/FNtVlHca5Id+rdJOpGlyVw9Khio7UYPI6dKnkK2bFtxL0lPFcHHdThrG8uGzgpG9zniJI08hn8MCfBZcVw+RPkUVnV+P7a6iCFoTZQLbCwklRMPpcocc7JGIYL/sp3sppumRue3Ja2YUrUb3lq8qyYO5V1L49V7G4iNXTwpsEVYcEDVZpwS1p9JrWrK6NqC8jt0kwOLGqMkNt8dTXOmQSDn0InUj8AS4XD40OeAhDZeRqLnrMMYmy6kkgOIY9tdAvkqPtn520n9fAE23Txk+GAKmf1Wb+N2TmQylaTGan8FkC3dzmOs27k3e/GFTeJTLZyh54ds5nvoy/z0JbgOZ531vKWKzFVya8jXn4y+k2c7WnuSYnpC1H2Sz9GwlV1iKg56ogAt93qffoAONz0ZTG1gSUIsSSqt0YstF08yifTT5/Jreg+6wc8FLSxNGimOpDsJ85OU9JRIiOAQ4ejfz3WPmt6Gv6oaUAoSxYYWFfexQaTgR6fqG1o+L40V50n3IfDdprs7R8LgJxpXuqoxpHzq7wgxthetGHSUi67OkBFqH3Ce44OObK0M6lTtuvAknEUnXSMRM21g6N3NWOuP1Fc8qIPNy2jztxCvRte/rET0MvtsEQiLannGz4mtARuWWR5TEHyk7jrsYGtdbDCAI="
