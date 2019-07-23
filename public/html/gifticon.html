@@ -63,14 +63,23 @@
       </tbody>
     </table>
     <table>
-      <tr>
-        <td width=50%>
-          이미지<input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
-        </td>
-        <td>
-          <p id="images" style="margin:0px"></p>
-        </td>
-      </tr>
+      <thead>
+        <tr>
+          <td>가격</td>
+          <td>이미지</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <input type="text" id="giftcost" class="text" placeholder="가격" />
+          </td>
+          <td>
+            <input type="file" id="files" class="files" name="img" onchange="addItem(this);" accept="image/*" multiple />
+            <p id="images" style="margin:0px"></p>
+          </td>
+        </tr>
+      </tbody>
     </table>
     <div>
       <button onclick="sendItem()">추가</button>
