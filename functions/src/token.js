@@ -42,12 +42,12 @@ module.exports = {
     req.write(JSON.stringify(body));
   },
 
-  clientSendToken: async function(privateKey, from, to, amount) {
+  clientSendToken: async function(privateKey, from_address, to_address, amount) {
     const pKey = Buffer.from(privateKey, "hex");
     var data = {
-      "from": from,
+      "from": from_address,
       "inputs": {
-        "receiverAddress": to,
+        "receiverAddress": to_address,
         "valueAmount": amount
       }
     };
