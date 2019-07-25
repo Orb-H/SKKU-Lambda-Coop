@@ -40,10 +40,10 @@ module.exports = {
       req.on("error", (err) => {
         reject(err);
       });
-      req.write(JSON.stringify(body))
+      req.write(JSON.stringify(body));
+      req.end();
     });
   },
-
 
   clientSendToken: function(privateKey, from_address, to_address, amount) {
     return new Promise((resolve, reject) => {
@@ -83,19 +83,65 @@ module.exports = {
             }
           }, (new_res) => {
             new_res.on("data", (new_body) => {
-              return "success";
+              resolve(new_body.data.txId);
             });
           });
           new_req.on("error", (err) => {
-            throw err;
+            reject(err);
           });
           new_req.write(JSON.stringify(new_data));
+          new_req.end();
         });
       });
       req.on("error", (err) => {
-        throw err;
+        reject(err);
       });
       req.write(JSON.stringify(data));
+      req.end();
     });
-  }
+  },
+
+  transactioncheck: function(txhash, targetAmount) {
+    return new Promise((resolve, reject) => {
+      var req = https.request({
+        hostname: "api.luniverse.io",
+        path: "/tx/v1.0/receipts/" + txhash,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + config.auth.luniverse
+        }
+      }, (res) => {
+        res.on("data", (body) => {
+          var data = body.data.txReceipt.logsRaw.data;
+          data = data.substring(130);
+          var amount = parseInt(data);
+          if (amount === parseInt(targetAmount)) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+        req.on("error", (err) => {
+          reject(err);
+        });
+        req.end();
+      });
+    })
+  },
+
+  sendFromClient: functions.https.onRequest(async (req, res) => {
+    var body = req.body;
+    var pKey = body.privateKey;
+    var f_address = body.from_address;
+    var t_address = body.to_address;
+    var amount = body.amount;
+
+    try {
+      var tx = await module.exports.clientSendToken(pKey, f_address, t_address, amount);
+      res.status(200).send(tx);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+  })
 }
