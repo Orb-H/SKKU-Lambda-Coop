@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const token = require('./token.js');
 //클라이언트 ==================================================================
 
 module.exports = {
@@ -9,16 +10,20 @@ module.exports = {
     var reqemail = body.email;
     var reqwaddress = body.waddress;
     var reqnickname = body.nickname;
-    await db.collection('login').add({
-      email: reqemail,
-      nickname: reqnickname,
-      w_addresss: reqwaddress
-    }).then(ref=>{
-      res.send("true");
-    })
+    try{
+      await db.collection('login').add({
+        email: reqemail,
+        nickname: reqnickname,
+        w_addresss: reqwaddress
+      }).then(ref=>{
+        res.send("true");
+        var sendtoken = await token.adminSendToken(reqemail,1);
+      
+      })
+    }catch(err) {
 
-    //토큰 지급 부분
-
+      res.status(500).send(err.message);
+    }
   }),
   //2. 추천인 입력 : 추천인 입력 받아 확인 후에 맞을 시 토큰 지급
   recommend: functions.https.onRequest((req, res) => {
@@ -28,24 +33,39 @@ module.exports = {
     var signup_waddress = body.s_waddress;
     var re_waddress = body.r_waddress;
     let loginRef = db.collection('login');
-    let query = loginRef.where.where('w_address','==', re_waddress).get()                      
+    let query = await loginRef.where('w_address','==', re_waddress).get()                      
           .then(snapshot =>{
               if(snapshot.empty){
-                  //존재하는 추천인이 없을때 해당하는 response
+                res.status(404).send("false");
               }
               else{
-                //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
+                let loginRef = db.collection('login');
+                let query2 = await loginRef.where('w_address','==', re_waddress).get()
+                .then(snapshot=>{
+                  if(snapshot.empty){
+                    res.status(404).send("false");
+                  }
+                  else{
+                    if(query2.doc.rvalid === 0){
+                      //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
+                      var sendtoken = await token.adminSendToken(signup_waddress,1);
+                      var sendtoken = await token.adminSendToken(re_waddress,1);
+                      res.send("true");
+                      query.doc.rvalid = 1;
+                    }
+                    else {
+                      res.send("false")
+                    }
+                  }
+                });
               }
            })
           .catch(err => {
-            //error getting documents
+            res.status(500).send(err.message);
           });
- 
   }),
-
   //3. 기프티콘 구매 부분.
   gifticonMain: functions.https.onRequest((req, res) => {
     //
- 
   })
 };
