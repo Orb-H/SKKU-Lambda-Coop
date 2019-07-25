@@ -18,11 +18,16 @@ function init() {
       $.post("/getapikey", {
         token: idToken,
       }, function(response) {
-        config.dapp.apiKey = response;
-        var buttons = document.getElementsByTagName('button');
-        for (i = 0; i < buttons.length; i++) {
-          var button = buttons[i];
-          button.classList.remove('disabled');
+        response = JSON.parse(response);
+        if (response.result === true) {
+          config.dapp.apiKey = response.data.key;
+          var buttons = document.getElementsByTagName('button');
+          for (i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            button.classList.remove('disabled');
+          }
+        } else {
+          location.href = "/";
         }
       });
     });
@@ -35,11 +40,16 @@ function init() {
         $.post("/getapikey", {
           token: idToken,
         }, function(response) {
-          config.dapp.apiKey = response;
-          var buttons = document.getElementsByTagName('button');
-          for (i = 0; i < buttons.length; i++) {
-            var button = buttons[i];
-            button.classList.remove('disabled');
+          response = JSON.parse(response);
+          if (response.result === true) {
+            config.dapp.apiKey = response.data.key;
+            var buttons = document.getElementsByTagName('button');
+            for (i = 0; i < buttons.length; i++) {
+              var button = buttons[i];
+              button.classList.remove('disabled');
+            }
+          } else {
+            location.href = "/";
           }
         });
       });
@@ -50,11 +60,11 @@ function init() {
     }
   });
 
-  $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fjs%2Fgifticon.js&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+  $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fjs%2Fgifticon.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
     $("#commitdategifticon").html(response[0].commit.author.date.substring(5, 10));
     $("#commitnamegifticon").html(response[0].commit.message);
   });
-  $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fjs%2Fuser.js&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
+  $.get("https://api.github.com/repos/Orb-H/SKKU-Lambda-Coop/commits?sha=web&path=public%2Fjs%2Fuser.html&page=1&per_page=1", function(response) {}, 'json').done(function(response) {
     $("#commitdateuser").html(response[0].commit.author.date.substring(5, 10));
     $("#commitnameuser").html(response[0].commit.message);
   });

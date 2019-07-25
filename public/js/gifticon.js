@@ -7,7 +7,7 @@ function lookUpItems() {
 
   var table = document.getElementById("gifticons").getElementsByTagName('tbody')[0];
   firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-    $.post("/gifticon_list", {
+    $.post("/gifticon/list", {
       token: idToken,
     }, function(response) {
       response = JSON.parse(response);
@@ -83,10 +83,10 @@ function addItem(input) {
 }
 
 function sendItem() {
-  var database = firebase.database();
   var giftcategory1 = document.getElementById("giftcategory1");
   var giftcategory2 = document.getElementById("giftcategory2");
   var giftname = document.getElementById("giftname");
+  var giftcost = document.getElementById("giftcost");
   var input = document.getElementById("files");
 
   var encoding = [];
@@ -105,6 +105,7 @@ function sendItem() {
               name: giftname.value,
               category1: giftcategory1,
               category2: giftcategory2,
+              cost: giftcost,
               length: input.files.length,
               images: encoding
             }, function(result) {
