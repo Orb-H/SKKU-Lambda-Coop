@@ -79,7 +79,7 @@ module.exports = {
                     if(query2.doc.rvalid === 0){
                       //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
                       var sendtoken = await token.adminSendToken(signup_waddress,1);
-                      var sendtoken = await token.adminSendToken(re_waddress,1);
+                      var sendtoken1 = await token.adminSendToken(re_waddress,1);
                       res.send("true");
                       query.doc.rvalid = 1;
                       obj.result = "true";
@@ -144,7 +144,7 @@ module.exports = {
                   }
                 }
                 else if(token.transactioncheck(body.txhash,giftprice)==='Too small amount'){
-                  obj.data.error_code =2 ;
+                  obj.data.error_code =4 ;
                 res.send(400).send(JSON.stringify(obj));
                 }
                 else if(token.transactioncheck(body.txhash,giftprice)==='Too big amount'){
