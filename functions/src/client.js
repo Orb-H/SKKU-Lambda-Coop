@@ -9,20 +9,35 @@ module.exports = {
     var reqemail = body.email;
     var reqwaddress = body.waddress;
     var reqnickname = body.nickname;
+    var obj = {
+      "result" : "false",
+      "data" : {}
+    }
     try{
       let query = db.collecion('login').where('emali','==',reqemail).get()
         .then(snapshot => {
           if(snapshot.empty){
-            await db.collection('login').add({
-              email: reqemail,
-              nickname: reqnickname,
-              w_addresss: reqwaddress
-            })      
-          res.send("true");
-          var sendtoken = await token.adminSendToken(reqemail,1);
+            let query = db.collecion('login').where('nickname','==',reqnickname).get()
+               .then(snapshot => {
+                 if(snapshot.empty){
+                  await db.collection('login').add({
+                    email: reqemail,
+                    nickname: reqnickname,
+                    w_addresss: reqwaddress
+                  })      
+                  obj.result= true;
+                  var sendtoken = await token.adminSendToken(reqemail,1);
+                  res.send(JSON.stringify(obj));
+                 }
+                 else{
+                  obj.data.error_code = 2;
+                  res.send(400).send(JSON.stringify(obj));
+                 }
+                });            
           }
           else {
-            res.send("false");
+            obj.data.error_code = 1;
+            res.send(400).send(JSON.stringify(obj));
           }
         }); 
     }catch(err) {
@@ -40,23 +55,24 @@ module.exports = {
       "result" : "false",
       "data" : {}
     }
+    var check = 0;
     let loginRef = db.collection('login');
     let query = await loginRef.where('w_address','==', re_waddress).get()                      
           .then(snapshot =>{
               if(snapshot.empty){
-                obj.data.push({
-                  error_code : 2
-                })
-                res.send(400).send(JSON.stringify(obj));
+                check = 2;
               }
-              else{
-                let loginRef = db.collection('login');
-                let query2 = await loginRef.where('w_address','==', signup_waddress).get()
+              let loginRef = db.collection('login');
+              let query2 = await loginRef.where('w_address','==', signup_waddress).get()
                 .then(snapshot=>{
                   if(snapshot.empty){
-                    obj.data.push({
-                      error_code : 1
-                    })
+                    if(check ===2 ){
+                      check = 3;
+                    }
+                    else {
+                      check = 1;
+                    }
+                    obj.data.error_code = check ;
                     res.send(400).send(JSON.stringify(obj));
                   }
                   else{
@@ -70,18 +86,16 @@ module.exports = {
                       res.send(JSON.stringify(obj));
                     }
                     else {
-                      obj.data.push({
-                        error_code : 4
-                      })
+                      obj.data.error_code =4 ;
                       res.send(400).send(JSON.stringify(obj));
                     }
                   }
-                });
-              }
-           })
-          .catch(err => {
+                }).catch(err => {
+                  res.status(500).send(err.message);
+                })
+           }).catch(err => {
             res.status(500).send(err.message);
-          });
+           });
   }),
   //3. 기프티콘 구매 부분.
   //인풋값 : txhash , name, category1, category2
@@ -106,14 +120,13 @@ module.exports = {
             .get()
             .then(snapshot=>{
               if(snapshot.empty){
-                obj.data.push({
-                  error_code : 4
-                })
+                //해당 기프티콘이 업을 때  
+                obj.data.error_code =4 ;
                 res.send(400).send(JSON.stringify(obj));
               }
               else{ 
                 var giftprice = dbquery.doc.price;
-                if (token.transactioncheck(body.txhash,giftprice)){
+                if (token.transactioncheck(body.txhash,giftprice)==='Target value matches'){
                   for ( var doc of query.docs){
                     if ( doc.used === 'false'){
                       var giftprice = doc.price;
@@ -130,8 +143,17 @@ module.exports = {
                     }
                   }
                 }
-                else{
-                  res.status(400).send(obj);
+                else if(token.transactioncheck(body.txhash,giftprice)==='Too small amount'){
+                  obj.data.error_code =2 ;
+                res.send(400).send(JSON.stringify(obj));
+                }
+                else if(token.transactioncheck(body.txhash,giftprice)==='Too big amount'){
+                  obj.data.error_code =3 ;
+                  res.send(400).send(JSON.stringify(obj));
+                }
+                else if(token.transactioncheck(body.txhash,giftprice)==='Tx find error') {
+                  obj.data.error_code =1 ;
+                res.send(400).send(JSON.stringify(obj));
                 }
               }
             });
@@ -141,14 +163,3 @@ module.exports = {
     }
   })
 };
-
-    /*
-    request : txhash, name , categoryt1 ,category2
-    response : result , data
-    */
-
-
-
-    //클라이언트에서 받은 해시를 검색하여 유효한지 판단
-    
-    //그 검색한 해시는 db에 저장 
