@@ -111,19 +111,26 @@ module.exports = {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + config.auth.luniverse
         }
-      }, (res) => {
-        res.on("data", (body) => {
-          var data = body.data.txReceipt.logsRaw.data;
-          data = data.substring(130);
-          var amount = parseInt(data);
-          if (amount === parseInt(targetAmount)) {
-            resolve(true);
-          } else {
-            resolve(false);
+      }, res => {
+        res.on("data", body => {
+          try {
+            var data = body.data.txReceipt.logsRaw.data;
+            data = data.substring(130);
+            var amount = parseInt(data);
+            var target = parseInt(targetAmount);
+            if (amount === target) {
+              resolve("Target value matches");
+            } else if (amount < target) {
+              resolve("Too small amount");
+            } else {
+              resolve("Too big amount");
+            }
+          } catch (err) {
+            reject(err);
           }
         });
-        req.on("error", (err) => {
-          reject(err);
+        req.on("error", () => {
+          resolve("TX find error");
         });
         req.end();
       });

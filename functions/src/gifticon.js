@@ -6,7 +6,7 @@ const {
 const login = require('./login.js');
 module.exports = {
   //2. 웹->서버 기프티콘 전달 요청주소 POST/gifticons/register
-  webtoservergift: functions.https.onRequest(async(req, res) => {
+  webtoservergift: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
@@ -14,37 +14,35 @@ module.exports = {
         "result": "false",
         "data": {}
       }
-      if(!isadmin){
+      if (!isadmin) {
         res.send(401).send(JSON.stringify(obj));
       }
       obj.result = "true";
-      var gname  = body.name;
+      var gname = body.name;
       var gcategory1 = body.category1;
       var gcategory2 = body.category2;
       var glength = body.length;
-      try{
-        for (var i = 0 ; i < glength ; i ++){
-            var decodedImage = new Buffer(body.images[i],"base64");
-            await db.collection('gifticon').add({
-                  category1: gcategory1,
-                  category2: gcategory2,
-                  menu: gname,
-                  image: decodedImage,
-                  price: 0,
-                  used: "false"
-            })
-          }
-          obj.data.push({
-            success: "true"
+      try {
+        /* eslint-disable no-await-in-loop */
+        for (var i = 0; i < glength; i++) {
+          var decodedImage = new Buffer(body.images[i], "base64");
+          await db.collection('gifticon').add({
+            category1: gcategory1,
+            category2: gcategory2,
+            menu: gname,
+            image: decodedImage,
+            price: 0,
+            used: false
           });
-          res.send(JSON.stringify(obj));
-        }catch(err) {
-          res.status(500).send(err.message);
         }
-      
-    }
-    else{
-      res.status(404).send('');
+        /* eslint-enable no-await-in-loop */
+
+        res.send(JSON.stringify(obj));
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(405).send('');
     }
   }),
   //3. 서버->웹 기프티콘 리스트 전달 요청주소 POST/gifticons/list
@@ -91,51 +89,49 @@ module.exports = {
       } catch (err) {
         res.status(500).send(err.message);
       }
-    }
-    else{
+    } else {
       res.status(404).send('');
     }
   }),
   //4. 기프티콘 특정 Type 정보 전달 요청주소 POST/gifticons/detail
-  gtype: functions.https.onRequest(async(req, res) => {
-      if (req.method === 'POST') {
-        var body = req.body;
-        var isadmin = await login.checkadmin(body.token);
-        var obj = {
-          "result": "false",
-          "data": {}
-        }
-        if (!isadmin) {
-          res.send(401).send(JSON.stringify(obj));
-        }
-        obj.result = "true";
-        obj.data.content = [];
-        try{
-          var dbquery =  db.collection('gifticon')
+  gtype: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var body = req.body;
+      var isadmin = await login.checkadmin(body.token);
+      var obj = {
+        "result": "false",
+        "data": {}
+      }
+      if (!isadmin) {
+        res.send(401).send(JSON.stringify(obj));
+      }
+      obj.result = "true";
+      obj.data.content = [];
+      try {
+        var dbquery = db.collection('gifticon')
           .where('name', '==', data.name)
           .where('category1', '==', data.category1)
           .where('category2', '==', data.category2)
           .get();
-          for ( var doc of query.docs){
-            let encodedimage = doc.data().image.toString('base64');
-                    obj.data.content.push({
-                      id: doc.id,
-                      image: encodedimage,
-                      used: doc.data().used
-                    });        
-          }
-          obj.data.length = obj.data.content.length;
-          res.send(JSON.stringify(obj));
-        }catch(err){
-          res.status(500).send(err.message);
+        for (var doc of query.docs) {
+          let encodedimage = doc.data().image.toString('base64');
+          obj.data.content.push({
+            id: doc.id,
+            image: encodedimage,
+            used: doc.data().used
+          });
         }
+        obj.data.length = obj.data.content.length;
+        res.send(JSON.stringify(obj));
+      } catch (err) {
+        res.status(500).send(err.message);
       }
-      else{
-        res.status(404).send('');
-      }
-    }),
+    } else {
+      res.status(404).send('');
+    }
+  }),
   //5. 기프티콘 삭제 요청 요청주소 POST/gifticons/remove
-  gdelete: functions.https.onRequest(async(req, res) => {
+  gdelete: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
@@ -146,21 +142,20 @@ module.exports = {
       if (!isadmin) {
 
         res.send(401).send(JSON.stringify(obj));
-      
+
       }
       obj.result = "true";
-      try{
+      try {
         var did = body.id;
         await db.collection('gifticon').doc(did).delete();
-            obj.data.push({
-               success: "true"
-            });
-      }catch (err) {
+        obj.data.push({
+          success: "true"
+        });
+      } catch (err) {
         res.status(500).send(err.message);
       }
-    }
-    else {
-        res.status(404).send('');
+    } else {
+      res.status(404).send('');
     }
   })
 };
