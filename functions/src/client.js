@@ -144,7 +144,7 @@ module.exports = {
                   }
                 }
                 else if(token.transactioncheck(body.txhash,giftprice)==='Too small amount'){
-                  obj.data.error_code =4 ;
+                  obj.data.error_code =2 ;
                 res.send(400).send(JSON.stringify(obj));
                 }
                 else if(token.transactioncheck(body.txhash,giftprice)==='Too big amount'){
