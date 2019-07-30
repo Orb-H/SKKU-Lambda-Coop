@@ -14,11 +14,11 @@ module.exports = {
       "data" : {}
     }
     try{
-      let query = db.collecion('login').where('emali','==',reqemail).get()
+      let query = db.collection('login').where('emali','==',reqemail).get()
         .then(snapshot => {
           if(snapshot.empty){
-            let query = db.collecion('login').where('nickname','==',reqnickname).get()
-               .then(snapshot => {
+            let query = db.collection('login').where('nickname','==',reqnickname).get()
+               .then(async snapshot => {
                  if(snapshot.empty){
                   await db.collection('login').add({
                     email: reqemail,
@@ -33,12 +33,14 @@ module.exports = {
                   obj.data.error_code = 2;
                   res.send(400).send(JSON.stringify(obj));
                  }
+                 return 1;
                 });            
           }
           else {
             obj.data.error_code = 1;
             res.send(400).send(JSON.stringify(obj));
           }
+          return 1;
         }); 
     }catch(err) {
       res.status(500).send(err.message);
@@ -58,16 +60,18 @@ module.exports = {
     var check = 0;
     let loginRef = db.collection('login');
     let query = await loginRef.where('w_address','==', re_waddress).get()                      
-          .then(snapshot =>{
+          .then(async snapshot =>{
               if(snapshot.empty){
                 check = 2;
               }
               let loginRef = db.collection('login');
               let query2 = await loginRef.where('w_address','==', signup_waddress).get()
-                .then(snapshot=>{
+                .then(async snapshot=>{
                   if(snapshot.empty){
                     if(check ===2 ){
                       check = 3;
+                      sdasdsad. csd
+                      a.sdasdsads
                     }
                     else {
                       check = 1;
@@ -76,23 +80,32 @@ module.exports = {
                     res.send(400).send(JSON.stringify(obj));
                   }
                   else{
-                    if(query2.doc.rvalid === 0){
-                      //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
-                      var sendtoken = await token.adminSendToken(signup_waddress,1);
-                      var sendtoken1 = await token.adminSendToken(re_waddress,1);
-                      res.send("true");
-                      query.doc.rvalid = 1;
-                      obj.result = "true";
-                      res.send(JSON.stringify(obj));
-                    }
-                    else {
-                      obj.data.error_code =4 ;
-                      res.send(400).send(JSON.stringify(obj));
-                    }
+                    snapshot.forEach(async doc=>{
+                      if(doc.data().recommender === false){
+                        //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
+                        var sendtoken = await token.adminSendToken(signup_waddress,1);
+                        var sendtoken1 = await token.adminSendToken(re_waddress,1);
+
+                        let setWithOptions = doc.set({
+                          recommender : true
+                        },{merge: true});
+
+                        obj.result = "true";
+                        res.send(JSON.stringify(obj));
+                      }
+                      else {
+                        obj.data.error_code =4 ;
+                        res.send(400).send(JSON.stringify(obj));
+                      }
+
+                    })
+                    
                   }
+                  return 1;
                 }).catch(err => {
                   res.status(500).send(err.message);
                 })
+                return 1;
            }).catch(err => {
             res.status(500).send(err.message);
            });
@@ -118,7 +131,7 @@ module.exports = {
             .where('category1', '==', data.category1)
             .where('category2', '==', data.category2)
             .get()
-            .then(snapshot=>{
+            .then(async snapshot=>{
               if(snapshot.empty){
                 //해당 기프티콘이 업을 때  
                 obj.data.error_code =4 ;
@@ -127,21 +140,25 @@ module.exports = {
               else{ 
                 var giftprice = dbquery.doc.price;
                 if (token.transactioncheck(body.txhash,giftprice)==='Target value matches'){
-                  for ( var doc of query.docs){
-                    if ( doc.used === 'false'){
-                      var giftprice = doc.price;
+                  for ( var doc of snapshot.docs){
+                    if ( doc.data().used === false){
                       let encodedimage = doc.data().image.toString('base64');
                       obj.data.image.push({
                           image: encodedimage,
                       });
-                      doc.used = 'true';
-                      obj.result = "true";
-                      await db.collection('transaction').add({
-                        transaction_hash : txhash
-                      });      
+
+                      let setWithOptions2 = doc.set({
+                        recommend : true
+                      },{merge: true});
+
+                      obj.result = "true";     
                       break;
                     }
                   }
+                  await db.collection('transaction').add({
+                    transaction_hash : txhash
+                  });
+                  res.send(JSON.stringify(obj)); 
                 }
                 else if(token.transactioncheck(body.txhash,giftprice)==='Too small amount'){
                   obj.data.error_code =2 ;
@@ -156,6 +173,7 @@ module.exports = {
                 res.send(400).send(JSON.stringify(obj));
                 }
               }
+              return 1;
             });
           }catch(err){
             res.status(500).send(err,message);
