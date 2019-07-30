@@ -73,12 +73,12 @@ const token = require('./src/token.js');
 exports.adminlogin = login.adminlogin;
 exports.getApiKey = login.getApiKey;
 exports.checkadmin = login.checkadmin;
-/*
+
 exports.signup = client.signup;
 exports.recommend = client.recommend;
 exports.gifticonMain = client.gifticonMain;
-*/
-//exports.webtoservergift = gifticon.webtoservergift;
+
+exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
-//exports.gtype = gifticon.gtype;
-//exports.gdelete = gifticon.gdelete;
+exports.gtype = gifticon.gtype;
+exports.gdelete = gifticon.gdelete;

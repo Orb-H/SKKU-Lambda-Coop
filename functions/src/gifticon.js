@@ -11,13 +11,13 @@ module.exports = {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
       var obj = {
-        "result": "false",
+        "result": false,
         "data": {}
       }
       if (!isadmin) {
         res.send(401).send(JSON.stringify(obj));
       }
-      obj.result = "true";
+      obj.result = true;
       var gname = body.name;
       var gcategory1 = body.category1;
       var gcategory2 = body.category2;
@@ -51,14 +51,14 @@ module.exports = {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
       var obj = {
-        "result": "false",
+        "result": false,
         "data": {}
       }
       if (!isadmin) {
-        res.send(401).send('');
+        res.status(401).send('');
       }
 
-      obj.result = "true";
+      obj.result = true;
       obj.data.content = [];
 
       try {
@@ -99,13 +99,13 @@ module.exports = {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
       var obj = {
-        "result": "false",
+        "result": false,
         "data": {}
       }
       if (!isadmin) {
-        res.send(401).send(JSON.stringify(obj));
+        res.status(401).send(JSON.stringify(obj));
       }
-      obj.result = "true";
+      obj.result = true;
       obj.data.content = [];
       try {
         var dbquery = db.collection('gifticon')
@@ -136,21 +136,17 @@ module.exports = {
       var body = req.body;
       var isadmin = await login.checkadmin(body.token);
       var obj = {
-        "result": "false",
+        "result": false,
         "data": {}
       }
       if (!isadmin) {
-
-        res.send(401).send(JSON.stringify(obj));
-
+        res.status(401).send(JSON.stringify(obj));
       }
-      obj.result = "true";
+      obj.result = true;
       try {
         var did = body.id;
         await db.collection('gifticon').doc(did).delete();
-        obj.data.push({
-          success: "true"
-        });
+        obj.data.success = true;
       } catch (err) {
         res.status(500).send(err.message);
       }
