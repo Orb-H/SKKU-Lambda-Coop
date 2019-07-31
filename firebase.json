@@ -30,7 +30,7 @@
         "function": "webtoservergift"
       },
       {
-        "source": "/gifticon/list",
+        "source": "/gifticons/list",
         "function": "servertowebgift"
       },
       {

@@ -7,11 +7,11 @@ function lookUpItems() {
 
   var table = document.getElementById("gifticons").getElementsByTagName('tbody')[0];
   firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-    $.post("/gifticon/list", {
+    $.post("/gifticons/list", {
       token: idToken,
     }, function(response) {
       response = JSON.parse(response);
-      for (i = 0; i < response.length; i++) {
+      for (i = 0; i < response.data.length; i++) {
         var newRow = table.insertRow(-1);
 
         var name = newRow.insertCell(0);
@@ -21,12 +21,12 @@ function lookUpItems() {
         var count = newRow.insertCell(4);
         var button = newRow.insertCell(5);
 
-        name.innerHTML = response.content[i].name;
-        category1.innerHTML = response.content[i].category1;
-        category2.innerHTML = response.content[i].category2;
-        cost.innerHTML = response.content[i].cost;
-        count.innerHTML = response.content[i].count;
-        button.innerHTML = "<button onclick=detailLookUpItems(" + response.content[i].category1 + "," + response.content[i].category2 + "," + response.content[i].name + ")>조회</button>";
+        name.innerHTML = response.data.content[i].name;
+        category1.innerHTML = response.data.content[i].category1;
+        category2.innerHTML = response.data.content[i].category2;
+        cost.innerHTML = response.data.content[i].cost;
+        count.innerHTML = response.data.content[i].count;
+        button.innerHTML = "<button onclick=detailLookUpItems(\"" + response.data.content[i].category1 + "\",\"" + response.data.content[i].category2 + "\",\"" + response.data.content[i].name + "\")>조회</button>";
       }
     });
   });
@@ -102,14 +102,16 @@ function sendItem() {
         if (encoding.length === length) {
           firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
             $.post("/gifticons/register", {
+              token: idToken,
               name: giftname.value,
-              category1: giftcategory1,
-              category2: giftcategory2,
-              cost: giftcost,
-              length: input.files.length,
+              category1: giftcategory1.value,
+              category2: giftcategory2.value,
+              cost: parseInt(giftcost.value),
+              length: length,
               images: encoding
             }, function(result) {
-              if (result === "true") {
+              result = JSON.parse(result);
+              if (result.result === true) {
                 alert("등록 성공!");
               } else {
                 alert("등록 실패!");
