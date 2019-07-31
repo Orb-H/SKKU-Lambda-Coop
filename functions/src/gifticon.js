@@ -22,16 +22,20 @@ module.exports = {
       var gcategory1 = body.category1;
       var gcategory2 = body.category2;
       var glength = body.length;
+      var gprice = body.cost;
       try {
+        var query = await db.collection('gifticon').where('menu', '==', gname).where('category1', '==', gcategory1).where('category2', '==', gcategory2).get();
+        if (query.docs.length !== 0) {
+          gprice = query.docs[0].data().price;
+        }
         /* eslint-disable no-await-in-loop */
         for (var i = 0; i < glength; i++) {
-          var decodedImage = new Buffer(body.images[i], "base64");
           await db.collection('gifticon').add({
             category1: gcategory1,
             category2: gcategory2,
             menu: gname,
-            image: decodedImage,
-            price: 0,
+            image: body.images[i],
+            price: gprice,
             used: false
           });
         }
@@ -67,15 +71,16 @@ module.exports = {
           var temp = false;
           var data = doc.data();
           for (var i = 0; i < obj.data.content.length; i++) {
-            if (obj.data.content[i].name === data.name && obj.content[i].category1 === data.category1 && obj.content[i].category2 === data.category2) {
+            var content = obj.data.content[i];
+            if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
               temp = true;
               obj.data.content[i].count++;
               break;
             }
           }
-          if (temp === 0) {
+          if (temp === false) {
             obj.data.content.push({
-              name: data.name,
+              name: data.menu,
               category1: data.category1,
               category2: data.category2,
               cost: data.price,
@@ -108,13 +113,9 @@ module.exports = {
       obj.result = true;
       obj.data.content = [];
       try {
-        var dbquery = db.collection('gifticon')
-          .where('name', '==', data.name)
-          .where('category1', '==', data.category1)
-          .where('category2', '==', data.category2)
-          .get();
-        for (var doc of query.docs) {
-          let encodedimage = doc.data().image.toString('base64');
+        var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
+        for (var doc of dbquery.docs) {
+          let encodedimage = doc.data().image;
           obj.data.content.push({
             id: doc.id,
             image: encodedimage,
@@ -147,6 +148,7 @@ module.exports = {
         var did = body.id;
         await db.collection('gifticon').doc(did).delete();
         obj.data.success = true;
+        res.send(JSON.stringify(obj));
       } catch (err) {
         res.status(500).send(err.message);
       }

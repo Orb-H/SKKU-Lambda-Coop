@@ -14,9 +14,9 @@ function lookUpItems() {
       for (i = 0; i < response.data.length; i++) {
         var newRow = table.insertRow(-1);
 
-        var name = newRow.insertCell(0);
-        var category1 = newRow.insertCell(1);
-        var category2 = newRow.insertCell(2);
+        var category1 = newRow.insertCell(0);
+        var category2 = newRow.insertCell(1);
+        var name = newRow.insertCell(2);
         var cost = newRow.insertCell(3);
         var count = newRow.insertCell(4);
         var button = newRow.insertCell(5);
@@ -48,7 +48,7 @@ function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
       curcategory1 = giftcategory1;
       curcategory2 = giftcategory2;
       curname = giftname;
-      for (i = 0; i < response.length; i++) {
+      for (i = 0; i < response.data.content.length; i++) {
         var newRow = table.insertRow(-1);
 
         var number = newRow.insertCell(0);
@@ -56,10 +56,10 @@ function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
         var used = newRow.insertCell(2);
         var del = newRow.insertCell(3);
 
-        number.innerHTML = response.content[i].id;
-        image.innerHTML = "<img src=" + response.content[i].image + " />";
-        used.innerHTML = (response.content[i].used === "true" ? "<font color=red>사용</font>" : "<font color=green>미사용</font>");
-        del.innerHTML = "<button onclick=removeItem(" + response.content[i].id + ")>삭제</button>";
+        number.innerHTML = response.data.content[i].id;
+        image.innerHTML = "<img width=150px src=" + response.data.content[i].image + " />";
+        used.innerHTML = (response.data.content[i].used === "true" ? "<font color=red>지급</font>" : "<font color=green>미지급</font>");
+        del.innerHTML = "<button onclick=removeItem(\"" + response.data.content[i].id + "\")>삭제</button>";
       }
     });
   });
@@ -131,7 +131,8 @@ function removeItem(giftnumber) {
       token: idToken,
       id: giftnumber
     }, function(response) {
-      if (response === "true") {
+      response = JSON.parse(response);
+      if (response.result === true) {
         alert("삭제 성공!");
         detailLookUpItems(curcategory1, curcategory2, curname);
       } else {
