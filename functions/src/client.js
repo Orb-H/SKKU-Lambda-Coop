@@ -1,6 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const token = require('./token.js');
+const {
+  auth,
+  db,
+} = require('./admin.js');
 //클라이언트 ==================================================================
 module.exports = {
   //1. 최초 가입 : 이메일address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
