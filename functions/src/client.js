@@ -11,7 +11,7 @@ module.exports = {
     var obj = {
       result: false,
       data: {}
-    }
+    };
     if (req.method === 'POST') {
       var body = req.body;
       var email = body.email;
@@ -28,10 +28,37 @@ module.exports = {
         res.status(500).send(err.message);
       }
     } else {
-      res.status(404).send(obj);
+      res.status(404).send('');
     }
 
   }),
+
+  nickname: functions.https.onRequest(async (req, res) => {
+    var obj = {
+      result: false,
+      data: {}
+    };
+    if (req.method === 'POST') {
+      var body = req.body;
+      var email = body.email;
+      try {
+        var snapshot = await db.collection('login').where('email', '==', email).select('nickname').get();
+        if (snapshot.empty) {
+          obj.data.message = "No such email.";
+          res.status(400).send(obj);
+        } else {
+          obj.result = true;
+          obj.data.nickname = snapshot.docs[0].data().nickname;
+          res.send(obj);
+        }
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
+  }),
+
   //1. 최초 가입 : 이메일address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
   signup: functions.https.onRequest(async (req, res) => {
     var body = req.body;
@@ -44,12 +71,12 @@ module.exports = {
       "data": {}
     }
     try {
-      var snapshot = await db.collection('login').where('email', '==', reqemail).get();
+      var snapshot = await db.collection('login').where('email', '==', reqemail).select('nickname').get();
       if (!snapshot.empty) {
         error_code |= 1;
       }
 
-      snapshot = await db.collection('login').where('nickname', '==', reqnickname).get();
+      snapshot = await db.collection('login').where('nickname', '==', reqnickname).select('nickname').get();
       if (!snapshot.empty) {
         error_code |= 2;
       }
@@ -86,12 +113,12 @@ module.exports = {
     var check = 0;
     let loginRef = db.collection('login');
 
-    var snapshot = await loginRef.where('w_address', '==', re_waddress).get();
+    var snapshot = await loginRef.where('w_address', '==', re_waddress).select('nickname').get();
     if (snapshot.empty) {
       check |= 2;
     }
 
-    snapshot = await loginRef.where('w_address', '==', signup_waddress).get();
+    snapshot = await loginRef.where('w_address', '==', signup_waddress).select('recommender').get();
     if (snapshot.empty) {
       check |= 1;
     }
@@ -106,7 +133,7 @@ module.exports = {
           res.status(500).send(err.message);
         }
 
-        let setWithOptions = doc.ref.set({
+        await doc.ref.set({
           recommender: true
         }, {
           merge: true
@@ -144,7 +171,7 @@ module.exports = {
         res.status(400).send(obj);
       }
       try {
-        var snapshot = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).where('used', '==', false).get();
+        var snapshot = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).where('used', '==', false).select('price', 'image').get();
         if (snapshot.empty) {
           obj.data.error_code = 4;
           res.status(400).send(obj);

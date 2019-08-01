@@ -46,6 +46,10 @@
         "function": "duplicate"
       },
       {
+        "source":"/client/nickname",
+        "function":"nickname"
+      },
+      {
         "source": "/client/signup",
         "function": "signup"
       },
