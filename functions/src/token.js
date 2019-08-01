@@ -101,11 +101,11 @@ module.exports = {
     });
   },
 
-  transactioncheck: function(txhash, targetAmount) {
+  transactioncheck: function(txId, targetAmount) {
     return new Promise((resolve, reject) => {
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/receipts/" + txhash,
+        path: "/tx/v1.0/histories/" + txId,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -114,8 +114,7 @@ module.exports = {
       }, res => {
         res.on("data", body => {
           try {
-            var data = body.data.txReceipt.logsRaw.data;
-            data = data.substring(130);
+            var data = body.data.history.txReceipt.logs[0].inputs.value;
             var amount = parseInt(data);
             var target = parseInt(targetAmount);
             if (amount === target) {
