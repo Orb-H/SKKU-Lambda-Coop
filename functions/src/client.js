@@ -21,7 +21,7 @@ module.exports = {
           obj.data.message = "Already registered email.";
           res.status(400).send(obj);
         } else {
-          obj.data.result = true;
+          obj.result = true;
           res.send(obj);
         }
       } catch (err) {
@@ -58,14 +58,15 @@ module.exports = {
         await db.collection('login').add({
           email: reqemail,
           nickname: reqnickname,
-          w_addresss: reqwaddress
-        })
+          w_address: reqwaddress,
+          recommender: false
+        });
         obj.result = true;
-        var sendtoken = await token.adminSendToken(reqemail, 1);
-        res.send(JSON.stringify(obj));
+        var sendtoken = await token.adminSendToken(reqemail, true, 1);
+        res.send(obj);
       } else {
         obj.data.error_code = error_code;
-        res.status(400).send(JSON.stringify(obj));
+        res.status(400).send(obj);
       }
     } catch (err) {
       res.status(500).send(err.message);
@@ -87,37 +88,39 @@ module.exports = {
 
     var snapshot = await loginRef.where('w_address', '==', re_waddress).get();
     if (snapshot.empty) {
-      check = 2;
+      check |= 2;
     }
 
     snapshot = await loginRef.where('w_address', '==', signup_waddress).get();
     if (snapshot.empty) {
       check |= 1;
-      obj.data.error_code = check;
-      res.status(400).send(JSON.stringify(obj));
-    } else {
+    }
+    if (check === 0) {
       var doc = snapshot.docs[0];
       if (doc.data().recommender === false) {
         //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
-        try{
-        var sendtoken = await token.adminSendToken(signup_waddress, 1);
-        var sendtoken1 = await token.adminSendToken(re_waddress, 1);
-      }catch(err){
-        res.status(500).send(err.message);
-      }
+        try {
+          var sendtoken = await token.adminSendToken(signup_waddress, false, 1);
+          var sendtoken1 = await token.adminSendToken(re_waddress, false, 1);
+        } catch (err) {
+          res.status(500).send(err.message);
+        }
 
-        let setWithOptions = doc.set({
+        let setWithOptions = doc.ref.set({
           recommender: true
         }, {
           merge: true
         });
 
         obj.result = true;
-        res.send(JSON.stringify(obj));
+        res.send(obj);
       } else {
-        obj.data.error_code |= 4;
-        res.status(400).send(JSON.stringify(obj));
+        check |= 4;
       }
+    }
+    if (check !== 0) {
+      obj.data.error_code = check;
+      res.status(400).send(obj);
     }
   }),
   //3. 기프티콘 구매 부분.
@@ -135,57 +138,51 @@ module.exports = {
         "result": false,
         "data": {}
       }
+      var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txid);
+      if (!valid_hash.empty) {
+        obj.data.error_code = 5;
+        res.status(400).send(obj);
+      }
       try {
-        var dbquery = db.collection('gifticon')
-          .where('name', '==', body.name)
-          .where('category1', '==', body.category1)
-          .where('category2', '==', body.category2)
-          .get()
-          .then(async snapshot => {
-            if (snapshot.empty) {
-              //해당 기프티콘이 업을 때
-              obj.data.error_code = 4;
-              res.send(400).send(JSON.stringify(obj));
-            } else {
-              var giftprice = dbquery.doc.price;
-              if (token.transactioncheck(body.txhash, giftprice) === 'Target value matches') {
-                for (var doc of snapshot.docs) {
-                  if (doc.data().used === false) {
-                    let encodedimage = doc.data().image.toString('base64');
-                    obj.data.image.push({
-                      image: encodedimage,
-                    });
+        var snapshot = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).where('used', '==', false).get();
+        if (snapshot.empty) {
+          obj.data.error_code = 4;
+          res.status(400).send(obj);
+        } else {
+          var doc = snapshot.docs[0];
+          var giftprice = doc.data().price;
+          var s = await token.transactioncheck(body.txid, giftprice);
+          if (s === 'Target value matches') {
+            let encodedimage = doc.data().image;
+            obj.data.image = encodedimage;
 
-                    let setWithOptions2 = doc.set({
-                      recommend: true
-                    }, {
-                      merge: true
-                    });
+            await doc.ref.set({
+              used: true
+            }, {
+              merge: true
+            });
 
-                    obj.result = true;
-                    break;
-                  }
-                }
-                await db.collection('transaction').add({
-                  transaction_hash: txhash
-                });
-                res.send(JSON.stringify(obj));
-              } else if (token.transactioncheck(body.txhash, giftprice) === 'Too small amount') {
-                obj.data.error_code = 2;
-                res.send(400).send(JSON.stringify(obj));
-              } else if (token.transactioncheck(body.txhash, giftprice) === 'Too big amount') {
-                obj.data.error_code = 3;
-                res.send(400).send(JSON.stringify(obj));
-              } else if (token.transactioncheck(body.txhash, giftprice) === 'Tx find error') {
-                obj.data.error_code = 1;
-                res.send(400).send(JSON.stringify(obj));
-              }
-            }
-            return 1;
-          });
+            obj.result = true;
+            await db.collection('transaction').add({
+              transaction_hash: body.txid
+            });
+            res.send(obj);
+          } else if (s === 'Too small amount') {
+            obj.data.error_code = 2;
+            res.status(400).send(obj);
+          } else if (s === 'Too big amount') {
+            obj.data.error_code = 3;
+            res.status(400).send(obj);
+          } else if (s === 'Tx find error') {
+            obj.data.error_code = 1;
+            res.status(400).send(obj);
+          }
+        }
       } catch (err) {
         res.status(500).send(err.message);
       }
+    } else {
+      res.status(404).send('');
     }
   })
 };

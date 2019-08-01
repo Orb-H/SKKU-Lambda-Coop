@@ -9,17 +9,18 @@ const https = require('https');
 const ethereumTx = require('ethereumjs-tx');
 
 module.exports = {
-  adminSendToken: function(email, amount) {
+  adminSendToken: function(target, isemail, amount) {
     return new Promise(async (resolve, reject) => {
-      var query = await db.collection('login').where('email', '==', email).select("w_address").get();
-      if (query.docs.length === 0) {
-        reject(new Error('No such email'));
+      if (isemail === true) {
+        var query = await db.collection('login').where('email', '==', target).select("w_address").get();
+        if (query.docs.length === 0) {
+          reject(new Error('No such email'));
+        }
+        target = query.docs[0].data().w_address;
       }
-
-      var data = query.docs[0].data();
       var body = {
         "inputs": {
-          "receiverAddress": data.w_address,
+          "receiverAddress": target,
           "valueAmount": amount
         }
       };
@@ -34,7 +35,7 @@ module.exports = {
         }
       }, (res) => {
         res.on('data', (body) => {
-          resolve(body.data.txId);
+          resolve(body.result);
         });
       });
       req.on("error", (err) => {
@@ -112,28 +113,38 @@ module.exports = {
           "Authorization": "Bearer " + config.auth.luniverse
         }
       }, res => {
+        var result = "";
         res.on("data", body => {
+          result += body;
+        });
+        res.on("close", () => {
           try {
+            var body = JSON.parse(result);
             var data = body.data.history.txReceipt.logs[0].inputs.value;
+            var to = body.data.history.txReceipt.logs[0].inputs.to;
             var amount = parseInt(data);
             var target = parseInt(targetAmount);
-            if (amount === target) {
-              resolve("Target value matches");
-            } else if (amount < target) {
-              resolve("Too small amount");
+            if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") {
+              resolve("Receiver is not system.");
             } else {
-              resolve("Too big amount");
+              if (amount === target) {
+                resolve("Target value matches");
+              } else if (amount < target) {
+                resolve("Too small amount");
+              } else {
+                resolve("Too big amount");
+              }
             }
           } catch (err) {
             reject(err);
           }
-        });
-        req.on("error", () => {
-          resolve("TX find error");
-        });
-        req.end();
+        })
       });
-    })
+      req.on("error", () => {
+        resolve("TX find error");
+      });
+      req.end();
+    });
   },
 
   sendFromClient: functions.https.onRequest(async (req, res) => {

@@ -74,6 +74,7 @@ exports.adminlogin = login.adminlogin;
 exports.getApiKey = login.getApiKey;
 exports.checkadmin = login.checkadmin;
 
+exports.duplicate = client.duplicate;
 exports.signup = client.signup;
 exports.recommend = client.recommend;
 exports.gifticonMain = client.gifticonMain;
