@@ -40,6 +40,22 @@
       {
         "source": "/gifticons/remove",
         "function": "gdelete"
+      },
+      {
+        "source": "/client/duplicate",
+        "function": "duplicate"
+      },
+      {
+        "source": "/client/signup",
+        "function": "signup"
+      },
+      {
+        "source": "/client/recommend",
+        "function": "recommend"
+      },
+      {
+        "source": "/client/purchase",
+        "function": "gifticonMain"
       }
     ]
   },

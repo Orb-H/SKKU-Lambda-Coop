@@ -7,6 +7,31 @@ const {
 } = require('./admin.js');
 //클라이언트 ==================================================================
 module.exports = {
+  duplicate: functions.https.onRequest(async (req, res) => {
+    var obj = {
+      result: false,
+      data: {}
+    }
+    if (req.method === 'POST') {
+      var body = req.body;
+      var email = body.email;
+      try {
+        var snapshot = await db.collection('login').where('email', '==', email).select('email').get();
+        if (!snapshot.empty) {
+          obj.data.message = "Already registered email.";
+          res.status(400).send(obj);
+        } else {
+          obj.data.result = true;
+          res.send(obj);
+        }
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send(obj);
+    }
+
+  }),
   //1. 최초 가입 : 이메일address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
   signup: functions.https.onRequest(async (req, res) => {
     var body = req.body;
@@ -69,13 +94,17 @@ module.exports = {
     if (snapshot.empty) {
       check |= 1;
       obj.data.error_code = check;
-      res.send(400).send(JSON.stringify(obj));
+      res.status(400).send(JSON.stringify(obj));
     } else {
       var doc = snapshot.docs[0];
       if (doc.data().recommender === false) {
         //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
+        try{
         var sendtoken = await token.adminSendToken(signup_waddress, 1);
         var sendtoken1 = await token.adminSendToken(re_waddress, 1);
+      }catch(err){
+        res.status(500).send(err.message);
+      }
 
         let setWithOptions = doc.set({
           recommender: true
@@ -87,7 +116,7 @@ module.exports = {
         res.send(JSON.stringify(obj));
       } else {
         obj.data.error_code |= 4;
-        res.send(400).send(JSON.stringify(obj));
+        res.status(400).send(JSON.stringify(obj));
       }
     }
   }),
@@ -108,9 +137,9 @@ module.exports = {
       }
       try {
         var dbquery = db.collection('gifticon')
-          .where('name', '==', data.name)
-          .where('category1', '==', data.category1)
-          .where('category2', '==', data.category2)
+          .where('name', '==', body.name)
+          .where('category1', '==', body.category1)
+          .where('category2', '==', body.category2)
           .get()
           .then(async snapshot => {
             if (snapshot.empty) {
