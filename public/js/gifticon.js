@@ -2,6 +2,7 @@ var curcategory1 = '';
 var curcategory2 = '';
 var curname = '';
 
+// Get information of what type of gifticons exist in DB
 function lookUpItems() {
   $("#gifticons tbody tr").remove();
 
@@ -32,6 +33,7 @@ function lookUpItems() {
   });
 }
 
+// Get information of which gifticons match for given category
 function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
   $("#gifticondetail tbody tr").remove();
 
@@ -65,6 +67,7 @@ function detailLookUpItems(giftcategory1, giftcategory2, giftname) {
   });
 }
 
+// Adding gifticons
 function addItem(input) {
   if (input.files && input.files[0]) {
     document.getElementById("images").innerHTML = "";
@@ -125,6 +128,7 @@ function sendItem() {
   }
 }
 
+// Remove specific gifticon
 function removeItem(giftnumber) {
   firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
     $.post("/gifticons/remove", {

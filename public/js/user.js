@@ -1,5 +1,6 @@
 var row = 0;
 
+// Get user information from firestore and luniverse
 function lookUpUsers() {
   $("#users tbody tr").remove();
 
@@ -21,6 +22,7 @@ function lookUpUsers() {
       nickname.innerHTML = data.nickname;
       w_address.innerHTML = data.w_address;
       if (data.w_address.length !== 0) {
+        // Request balance of specific user
         $.ajax({
           type: 'get',
           url: 'https://api.luniverse.io/tx/v1.0/wallets/' + data.w_address + '/' + config.mt.symbol + '/' + config.st.symbol + '/balance',
@@ -41,6 +43,7 @@ function lookUpUsers() {
   });
 }
 
+// Send specific tokens to specific user
 function sendToken() {
   var table = document.getElementById("sendtoken").getElementsByTagName('tbody')[0];
 
