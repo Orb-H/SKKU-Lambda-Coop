@@ -211,5 +211,44 @@ module.exports = {
     } else {
       res.status(404).send('');
     }
+  }),
+
+  createWallet: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var body = req.body;
+      try {
+        var address = await token.createWallet(body.privateKey);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
+  }),
+
+  lookupWallet: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var body = req.body;
+      try {
+        var address = await token.findWallet(body.privateKey);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
+  }),
+
+  checkBalance: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var body = req.body;
+      try {
+        var address = await token.checkBalance(body.address);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
   })
 };

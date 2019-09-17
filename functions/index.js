@@ -75,9 +75,13 @@ exports.getApiKey = login.getApiKey;
 exports.checkadmin = login.checkadmin;
 
 exports.duplicate = client.duplicate;
+exports.nickname = client.nickname;
 exports.signup = client.signup;
 exports.recommend = client.recommend;
 exports.gifticonMain = client.gifticonMain;
+exports.createWallet = client.createWallet;
+exports.lookupWallet = client.lookupWallet;
+exports.checkBalance = client.checkbalance;
 
 exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;

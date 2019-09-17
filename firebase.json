@@ -46,8 +46,8 @@
         "function": "duplicate"
       },
       {
-        "source":"/client/nickname",
-        "function":"nickname"
+        "source": "/client/nickname",
+        "function": "nickname"
       },
       {
         "source": "/client/signup",
@@ -60,6 +60,18 @@
       {
         "source": "/client/purchase",
         "function": "gifticonMain"
+      },
+      {
+        "source": "/client/createwallet",
+        "function": "createWallet"
+      },
+      {
+        "source": "/client/lookupwallet",
+        "function": "lookupWallet"
+      },
+      {
+        "source": "/client/checkbalance",
+        "function": "checkBalance"
       }
     ]
   },

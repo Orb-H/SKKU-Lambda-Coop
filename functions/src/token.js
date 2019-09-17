@@ -160,5 +160,125 @@ module.exports = {
     } catch (err) {
       res.status(500).send(err.message);
     }
-  })
+  }),
+
+  createWallet: function(privateKey) {
+    return new Promise(async (resolve, reject) => {
+      var data = {
+        walletType: "LUNIVERSE",
+        userKey: privateKey
+      };
+
+      var req = https.request({
+        hostname: "api.luniverse.io",
+        path: "/tx/v1.0/wallets",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + config.auth.luniverse
+        }
+      }, res => {
+        var result = "";
+        res.on("data", body => {
+          result += body;
+        });
+        res.on("close", () => {
+          try {
+            var body = JSON.parse(result);
+            if (body.result === true) {
+              var address = body.data.address;
+              resolve(address);
+            } else {
+              throw new Error(body.message);
+            }
+          } catch (err) {
+            reject(err);
+          }
+        })
+      });
+      req.on("error", () => {
+        resolve("TX find error");
+      });
+      req.write(JSON.stringify(data));
+      req.end();
+    });
+  },
+
+  findWallet: function(privateKey) {
+    return new Promise(async (resolve, reject) => {
+      var data = {
+        walletType: "LUNIVERSE",
+        userKey: privateKey
+      };
+
+      var req = https.request({
+        hostname: "api.luniverse.io",
+        path: "/tx/v1.0/wallets/bridge",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + config.auth.luniverse
+        }
+      }, res => {
+        var result = "";
+        res.on("data", body => {
+          result += body;
+        });
+        res.on("close", () => {
+          try {
+            var body = JSON.parse(result);
+            if (body.result === true) {
+              var address = body.data.address;
+              resolve(address);
+            } else {
+              throw new Error(body.message);
+            }
+          } catch (err) {
+            reject(err);
+          }
+        })
+      });
+      req.on("error", () => {
+        resolve("TX find error");
+      });
+      req.write(JSON.stringify(data));
+      req.end();
+    });
+  },
+
+  checkBalance: function(address) {
+    return new Promise(async (resolve, reject) => {
+      var req = https.request({
+        hostname: "api.luniverse.io",
+        path: "/tx/v1.0/wallets/" + address + "/FT9754/SKK/balance",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + config.auth.luniverse
+        }
+      }, res => {
+        var result = "";
+        res.on("data", body => {
+          result += body;
+        });
+        res.on("close", () => {
+          try {
+            var body = JSON.parse(result);
+            if (body.result === true) {
+              var address = body.data.balance;
+              resolve(address);
+            } else {
+              throw new Error(body.message);
+            }
+          } catch (err) {
+            reject(err);
+          }
+        })
+      });
+      req.on("error", () => {
+        resolve("TX find error");
+      });
+      req.end();
+    });
+  }
 }
