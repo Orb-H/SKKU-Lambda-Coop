@@ -30,7 +30,7 @@
         "function": "webtoservergift"
       },
       {
-        "source": "/gifticon_list",
+        "source": "/gifticons/list",
         "function": "servertowebgift"
       },
       {
@@ -40,6 +40,46 @@
       {
         "source": "/gifticons/remove",
         "function": "gdelete"
+      },
+      {
+        "source": "/client/duplicate",
+        "function": "duplicate"
+      },
+      {
+        "source": "/client/nickname",
+        "function": "nickname"
+      },
+      {
+        "source": "/client/signup",
+        "function": "signup"
+      },
+      {
+        "source": "/client/recommend",
+        "function": "recommend"
+      },
+      {
+        "source": "/client/purchase",
+        "function": "gifticonMain"
+      },
+      {
+        "source": "/client/createwallet",
+        "function": "createWallet"
+      },
+      {
+        "source": "/client/lookupwallet",
+        "function": "lookupWallet"
+      },
+      {
+        "source": "/client/checkbalance",
+        "function": "checkBalance"
+      },
+      {
+        "source": "/client/getgifttypes",
+        "function": "getGifticonTypes"
+      },
+      {
+        "source": "/client/getgiftdetail",
+        "function": "getGifticonDetail"
       }
     ]
   },

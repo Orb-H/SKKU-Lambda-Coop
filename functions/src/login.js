@@ -3,33 +3,57 @@ const {
   auth,
   db,
 } = require('./admin.js');
+const config = functions.config();
 
 module.exports = {
-  adminlogin: functions.https.onRequest((req, res) => {
+  adminlogin: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     if (req.method === 'POST') {
-      module.exports.checkadmin(body.token).then((admin) => {
-        if (admin) {
-          res.send("true");
+      try {
+        var obj = {
+          "result": true,
+          "data": {}
+        };
+        var isadmin = await module.exports.checkadmin(body.token);
+        obj.result = isadmin;
+        if (isadmin) {
+          res.status(200);
         } else {
-          res.send("false");
+          obj.data.message = "Not an authorized user.";
+          res.status(401);
         }
-        return admin;
-      }).catch((error) => {});
+        res.send(JSON.stringify(obj));
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send();
     }
   }),
 
-  getApiKey: functions.https.onRequest((req, res) => {
+  getApiKey: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     if (req.method === 'POST') {
-      module.exports.checkadmin(body.token).then((admin) => {
-        if (admin) {
-          res.send("9d6mUgGSFEE2BesmdLUWdC75aL4mtFrW2spEVGWRNrY33oXrB4wwgcccMAA8F8Xx");
-        } else {
-          res.status(401).send('');
+      try {
+        var obj = {
+          "result": true,
+          "data": {}
         }
-        return admin;
-      }).catch((error) => {});
+        var isadmin = await module.exports.checkadmin(body.token);
+        obj.result = isadmin;
+        if (isadmin) {
+          obj.data.key = config.auth.luniverse;
+          res.status(200);
+        } else {
+          obj.data.message = "Not an authorized user.";
+          res.status(401);
+        }
+        res.send(JSON.stringify(obj));
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
     }
   }),
 
@@ -37,7 +61,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       auth.verifyIdToken(token).then((decodedToken) => {
         let uid = decodedToken.uid;
-        if (uid === '73cxqheH7nMwI2Gj91ojCEfm1j73') {
+        if (uid === config.auth.system) {
           resolve(true);
         } else {
           throw new Error("Invalid uid");
