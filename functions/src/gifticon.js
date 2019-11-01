@@ -130,7 +130,9 @@ module.exports = {
   gifticonlist: function() {
     return new Promise(async (resolve, reject) => {
       try {
-        var obj = {};
+        var obj = {
+          content: []
+        };
         var query = await db.collection('gifticon').get();
 
         for (var doc of query.docs) {
@@ -165,7 +167,9 @@ module.exports = {
   gifticondetail: function() {
     return new Promise(async (resolve, reject) => {
       try {
-        var obj = {};
+        var obj = {
+          content: []
+        };
         var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
         for (var doc of dbquery.docs) {
           let encodedimage = doc.data().image;
