@@ -5,6 +5,7 @@ const {
   auth,
   db,
 } = require('./admin.js');
+const gifticon = require('./gifticon.js');
 //클라이언트 ==================================================================
 module.exports = {
   duplicate: functions.https.onRequest(async (req, res) => {
@@ -218,6 +219,11 @@ module.exports = {
       var body = req.body;
       try {
         var address = await token.createWallet(body.privateKey);
+        var obj = {
+          result: true,
+          address: address
+        };
+        res.send(obj);
       } catch (err) {
         res.status(500).send(err.message);
       }
@@ -231,6 +237,11 @@ module.exports = {
       var body = req.body;
       try {
         var address = await token.findWallet(body.privateKey);
+        var obj = {
+          result: true,
+          address: address
+        };
+        res.send(obj);
       } catch (err) {
         res.status(500).send(err.message);
       }
@@ -244,6 +255,47 @@ module.exports = {
       var body = req.body;
       try {
         var address = await token.checkBalance(body.address);
+        var obj = {
+          result: true,
+          balance: address
+        };
+        res.send(obj);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
+  }),
+
+  getGifticonTypes: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var obj = {
+        result: false,
+        data: {}
+      };
+      try {
+        obj.data = await gifticon.gifticonlist();
+        obj.result = true;
+        res.send(obj);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
+  }),
+
+  getGifticonDetail: functions.https.onRequest(async (req, res) => {
+    if (req.method === 'POST') {
+      var obj = {
+        result: false,
+        data: {}
+      };
+      try {
+        obj.data = await gifticon.gifticondetail();
+        obj.result = true;
+        res.send(obj);
       } catch (err) {
         res.status(500).send(err.message);
       }

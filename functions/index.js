@@ -82,6 +82,8 @@ exports.gifticonMain = client.gifticonMain;
 exports.createWallet = client.createWallet;
 exports.lookupWallet = client.lookupWallet;
 exports.checkBalance = client.checkbalance;
+exports.getGifticonTypes = client.getGifticonTypes;
+exports.getGifticonDetail = client.getGifticonDetail;
 
 exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;

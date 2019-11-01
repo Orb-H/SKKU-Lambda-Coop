@@ -66,28 +66,7 @@ module.exports = {
       obj.data.content = [];
 
       try {
-        var query = await db.collection('gifticon').get();
-        for (var doc of query.docs) {
-          var temp = false;
-          var data = doc.data();
-          for (var i = 0; i < obj.data.content.length; i++) {
-            var content = obj.data.content[i];
-            if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
-              temp = true;
-              obj.data.content[i].count++;
-              break;
-            }
-          }
-          if (temp === false) {
-            obj.data.content.push({
-              name: data.menu,
-              category1: data.category1,
-              category2: data.category2,
-              cost: data.price,
-              count: 1
-            });
-          }
-        }
+        obj.data = await module.exports.gifticonlist();
 
         obj.data.length = obj.data.content.length;
         res.send(JSON.stringify(obj));
@@ -113,16 +92,7 @@ module.exports = {
       obj.result = true;
       obj.data.content = [];
       try {
-        var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
-        for (var doc of dbquery.docs) {
-          let encodedimage = doc.data().image;
-          obj.data.content.push({
-            id: doc.id,
-            image: encodedimage,
-            used: doc.data().used
-          });
-        }
-        obj.data.length = obj.data.content.length;
+        obj.data = await module.exports.gifticondetail();
         res.send(JSON.stringify(obj));
       } catch (err) {
         res.status(500).send(err.message);
@@ -154,6 +124,57 @@ module.exports = {
       }
     } else {
       res.status(404).send('');
+    }
+  }),
+
+  gifticonlist: new Promise(async () => {
+    try {
+      var obj = {};
+      var query = await db.collection('gifticon').get();
+
+      for (var doc of query.docs) {
+        var temp = false;
+        var data = doc.data();
+        for (var i = 0; i < obj.content.length; i++) {
+          var content = obj.content[i];
+          if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
+            temp = true;
+            obj.content[i].count++;
+            break;
+          }
+        }
+        if (temp === false) {
+          obj.content.push({
+            name: data.menu,
+            category1: data.category1,
+            category2: data.category2,
+            cost: data.price,
+            count: 1
+          });
+        }
+      }
+
+      resolve(obj);
+    } catch (err) {
+      reject(err);
+    }
+  }),
+
+  gifticondetail: new Promise(async () => {
+    try {
+      var obj = {};
+      var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
+      for (var doc of dbquery.docs) {
+        let encodedimage = doc.data().image;
+        obj.content.push({
+          id: doc.id,
+          image: encodedimage,
+          used: doc.data().used
+        });
+      }
+      resolve(obj);
+    } catch (err) {
+      reject(err);
     }
   })
 };

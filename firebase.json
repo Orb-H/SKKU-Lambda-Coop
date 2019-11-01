@@ -72,6 +72,14 @@
       {
         "source": "/client/checkbalance",
         "function": "checkBalance"
+      },
+      {
+        "source": "/client/getgifttypes",
+        "function": "getGifticonTypes"
+      },
+      {
+        "source": "/client/getgiftdetail",
+        "function": "getGifticonDetail"
       }
     ]
   },
