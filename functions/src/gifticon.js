@@ -127,54 +127,58 @@ module.exports = {
     }
   }),
 
-  gifticonlist: new Promise(async () => {
-    try {
-      var obj = {};
-      var query = await db.collection('gifticon').get();
+  gifticonlist: function() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var obj = {};
+        var query = await db.collection('gifticon').get();
 
-      for (var doc of query.docs) {
-        var temp = false;
-        var data = doc.data();
-        for (var i = 0; i < obj.content.length; i++) {
-          var content = obj.content[i];
-          if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
-            temp = true;
-            obj.content[i].count++;
-            break;
+        for (var doc of query.docs) {
+          var temp = false;
+          var data = doc.data();
+          for (var i = 0; i < obj.content.length; i++) {
+            var content = obj.content[i];
+            if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
+              temp = true;
+              obj.content[i].count++;
+              break;
+            }
+          }
+          if (temp === false) {
+            obj.content.push({
+              name: data.menu,
+              category1: data.category1,
+              category2: data.category2,
+              cost: data.price,
+              count: 1
+            });
           }
         }
-        if (temp === false) {
+
+        resolve(obj);
+      } catch (err) {
+        reject(err);
+      }
+    })
+  },
+
+  gifticondetail: function() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var obj = {};
+        var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
+        for (var doc of dbquery.docs) {
+          let encodedimage = doc.data().image;
           obj.content.push({
-            name: data.menu,
-            category1: data.category1,
-            category2: data.category2,
-            cost: data.price,
-            count: 1
+            id: doc.id,
+            image: encodedimage,
+            used: doc.data().used
           });
         }
+        resolve(obj);
+      } catch (err) {
+        reject(err);
       }
-
-      resolve(obj);
-    } catch (err) {
-      reject(err);
-    }
-  }),
-
-  gifticondetail: new Promise(async () => {
-    try {
-      var obj = {};
-      var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
-      for (var doc of dbquery.docs) {
-        let encodedimage = doc.data().image;
-        obj.content.push({
-          id: doc.id,
-          image: encodedimage,
-          used: doc.data().used
-        });
-      }
-      resolve(obj);
-    } catch (err) {
-      reject(err);
-    }
-  })
+    })
+  }
 };
