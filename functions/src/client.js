@@ -168,6 +168,7 @@ module.exports = {
       }
       var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txid);
       if (!valid_hash.empty) {
+        console.error("txid: " + body.txid);
         obj.data.error_code = 5;
         res.status(400).send(obj);
       }
