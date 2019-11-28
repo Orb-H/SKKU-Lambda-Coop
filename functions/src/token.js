@@ -27,7 +27,7 @@ module.exports = {
 
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/transactions/adminSend",
+        path: "/tx/v1.1/transactions/adminSend",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ module.exports = {
 
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/transactions/clientSend",
+        path: "/tx/v1.1/transactions/clientSend",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ module.exports = {
 
           var new_req = https.request({
             hostname: "api.luniverse.io",
-            path: "/tx/v1.0/transactions/clientSend",
+            path: "/tx/v1.1/transactions/clientSend",
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -106,7 +106,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/histories/" + txId,
+        path: "/tx/v1.1/histories/" + txId,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +171,7 @@ module.exports = {
 
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/wallets",
+        path: "/tx/v1.1/wallets",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -213,7 +213,7 @@ module.exports = {
 
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/wallets/bridge",
+        path: "/tx/v1.1/wallets/bridge",
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -250,7 +250,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       var req = https.request({
         hostname: "api.luniverse.io",
-        path: "/tx/v1.0/wallets/" + address + "/FT9754/SKK/balance",
+        path: "/tx/v1.1/wallets/" + address + "/FT9754/SKK/balance",
         method: "GET",
         headers: {
           "Content-Type": "application/json",
