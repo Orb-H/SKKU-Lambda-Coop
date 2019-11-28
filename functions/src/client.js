@@ -166,10 +166,8 @@ module.exports = {
         "result": false,
         "data": {}
       }
-      var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txid).get();
+      var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txhash).get();
       if (!valid_hash.empty) {
-        console.error(valid_hash)
-        console.error("txid: " + body.txid);
         obj.data.error_code = 5;
         res.status(400).send(obj);
       }
@@ -181,7 +179,7 @@ module.exports = {
         } else {
           var doc = snapshot.docs[0];
           var giftprice = doc.data().price;
-          var s = await token.transactioncheck(body.txid, giftprice);
+          var s = await token.transactioncheck(body.txhash, giftprice);
           if (s === 'Target value matches') {
             let encodedimage = doc.data().image;
             obj.data.image = encodedimage;
@@ -194,7 +192,7 @@ module.exports = {
 
             obj.result = true;
             await db.collection('transaction').add({
-              transaction_hash: body.txid
+              transaction_hash: body.txhash
             });
             res.send(obj);
           } else if (s === 'Too small amount') {
