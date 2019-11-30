@@ -179,6 +179,7 @@ module.exports = {
         } else {
           var doc = snapshot.docs[0];
           var giftprice = doc.data().price;
+          console.error(body.txhash);
           var s = await token.transactioncheck(body.txhash, giftprice);
           if (s === 'Target value matches') {
             let encodedimage = doc.data().image;
