@@ -9,7 +9,7 @@ const https = require('https');
 const ethereumTx = require('ethereumjs-tx');
 
 module.exports = {
-  adminSendToken: function(target, isemail, amount) {
+  adminSendToken: function (target, isemail, amount) {
     return new Promise(async (resolve, reject) => {
       if (isemail === true) {
         var query = await db.collection('login').where('email', '==', target).select("w_address").get();
@@ -34,8 +34,14 @@ module.exports = {
           "Authorization": "Bearer " + config.auth.luniverse
         }
       }, (res) => {
+        result = "";
         res.on('data', (body) => {
-          resolve(body.result);
+          result += body;
+        });
+        res.on("close", () => {
+          console.error(result);
+          var body = JSON.parse(result);
+          resolve(body.data.result);
         });
       });
       req.on("error", (err) => {
@@ -46,7 +52,7 @@ module.exports = {
     });
   },
 
-  clientSendToken: function(privateKey, from_address, to_address, amount) {
+  clientSendToken: function (privateKey, from_address, to_address, amount) {
     return new Promise((resolve, reject) => {
       const pKey = Buffer.from(privateKey, "hex");
       var data = {
@@ -109,7 +115,7 @@ module.exports = {
     res.send(result);
   }),
 
-  transactioncheck: function(txId, targetAmount) {
+  transactioncheck: function (txId, targetAmount) {
     return new Promise((resolve, reject) => {
       console.error(txId + " " + targetAmount);
       var req = https.request({
@@ -171,7 +177,7 @@ module.exports = {
     }
   }),
 
-  createWallet: function(privateKey) {
+  createWallet: function (privateKey) {
     return new Promise(async (resolve, reject) => {
       var data = {
         walletType: "LUNIVERSE",
@@ -213,7 +219,7 @@ module.exports = {
     });
   },
 
-  findWallet: function(privateKey) {
+  findWallet: function (privateKey) {
     return new Promise(async (resolve, reject) => {
       var data = {
         walletType: "LUNIVERSE",
@@ -255,7 +261,7 @@ module.exports = {
     });
   },
 
-  checkBalance: function(address) {
+  checkBalance: function (address) {
     return new Promise(async (resolve, reject) => {
       var req = https.request({
         hostname: "api.luniverse.io",
