@@ -102,8 +102,16 @@ module.exports = {
     });
   },
 
+  debug_transactioncheck: functions.https.onRequest(async (req, res) => {
+    var body = req.body;
+    var txid = body.txid;
+    var result = await module.exports.transactioncheck(txid, 0);
+    res.send(result);
+  }),
+
   transactioncheck: function(txId, targetAmount) {
     return new Promise((resolve, reject) => {
+      console.error(txId + " " + targetAmount);
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/histories/" + txId,
