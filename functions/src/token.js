@@ -127,6 +127,7 @@ module.exports = {
         });
         res.on("close", () => {
           try {
+            console.error(result);
             var body = JSON.parse(result);
             var data = body.data.history.txReceipt.logs[0].inputs.value;
             var to = body.data.history.txReceipt.logs[0].inputs.to;
