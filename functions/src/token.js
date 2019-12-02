@@ -7,6 +7,9 @@ const config = functions.config();
 const login = require('./login.js');
 const https = require('https');
 const ethereumTx = require('ethereumjs-tx');
+const bigdecimal = require('bigdecimal');
+
+const convertConstant = new bigdecimal.BigDecimal("1000000000000000000");
 
 module.exports = {
   adminSendToken: function (target, isemail, amount) {
@@ -21,7 +24,7 @@ module.exports = {
       var body = {
         "inputs": {
           "receiverAddress": target,
-          "valueAmount": amount
+          "valueAmount": module.exports.convertUnitToMT(amount)
         }
       };
 
@@ -59,7 +62,7 @@ module.exports = {
         "from": from_address,
         "inputs": {
           "receiverAddress": to_address,
-          "valueAmount": amount
+          "valueAmount": module.exports.convertUnitToMT(amount)
         }
       };
 
@@ -137,8 +140,8 @@ module.exports = {
             var body = JSON.parse(result);
             var data = body.data.history.txReceipt.logs[0].inputs.value;
             var to = body.data.history.txReceipt.logs[0].inputs.to;
-            var amount = parseInt(data);
-            var target = parseInt(targetAmount);
+            var amount = new bigdecimal.BigDecimal(data);
+            var target = new bigdecimal.BigDecimal(targetAmount).multiply(convertConstant);
             if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") {
               resolve("Receiver is not system.");
             } else {
@@ -280,8 +283,8 @@ module.exports = {
           try {
             var body = JSON.parse(result);
             if (body.result === true) {
-              var address = body.data.balance;
-              resolve(address);
+              var balance = module.exports.convertUnitToSkkoin(body.data.balance);
+              resolve(balance);
             } else {
               throw new Error(body.message);
             }
@@ -295,5 +298,15 @@ module.exports = {
       });
       req.end();
     });
+  },
+
+  convertUnitToMT: function (x) {
+    var y = new bigdecimal.BigDecimal(x);
+    return y.multiply(convertConstant).toPlainString();
+  },
+
+  convertUnitToSkkoin: function (x) {
+    var y = new bigdecimal.BigDecimal(x);
+    return y.divide(convertConstant).toPlainString();
   }
 }

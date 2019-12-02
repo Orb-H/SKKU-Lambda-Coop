@@ -81,7 +81,7 @@ exports.recommend = client.recommend;
 exports.gifticonMain = client.gifticonMain;
 exports.createWallet = client.createWallet;
 exports.lookupWallet = client.lookupWallet;
-exports.checkBalance = client.checkbalance;
+exports.checkBalance = client.checkBalance;
 exports.getGifticonTypes = client.getGifticonTypes;
 exports.getGifticonDetail = client.getGifticonDetail;
 
@@ -89,3 +89,5 @@ exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
 exports.gtype = gifticon.gtype;
 exports.gdelete = gifticon.gdelete;
+
+exports.debug_transactioncheck=token.debug_transactioncheck;

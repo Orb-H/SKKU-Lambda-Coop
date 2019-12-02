@@ -255,10 +255,10 @@ module.exports = {
     if (req.method === 'POST') {
       var body = req.body;
       try {
-        var address = await token.checkBalance(body.address);
+        var balance = await token.checkBalance(body.address);
         var obj = {
           result: true,
-          balance: address
+          balance: balance
         };
         res.send(obj);
       } catch (err) {
