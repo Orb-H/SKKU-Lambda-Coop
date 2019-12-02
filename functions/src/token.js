@@ -7,9 +7,9 @@ const config = functions.config();
 const login = require('./login.js');
 const https = require('https');
 const ethereumTx = require('ethereumjs-tx');
-const bigdecimal = require('bigdecimal');
+const bignumber = require('bignumber.js');
 
-const convertConstant = new bigdecimal.BigDecimal("1000000000000000000");
+const convertConstant = new BigNumber("1000000000000000000");
 
 module.exports = {
   adminSendToken: function (target, isemail, amount) {
@@ -140,8 +140,8 @@ module.exports = {
             var body = JSON.parse(result);
             var data = body.data.history.txReceipt.logs[0].inputs.value;
             var to = body.data.history.txReceipt.logs[0].inputs.to;
-            var amount = new bigdecimal.BigDecimal(data);
-            var target = new bigdecimal.BigDecimal(targetAmount).multiply(convertConstant);
+            var amount = new BigNumber(data);
+            var target = new BigNumber(targetAmount).multipliedBy(convertConstant);
             if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") {
               resolve("Receiver is not system.");
             } else {
@@ -301,12 +301,12 @@ module.exports = {
   },
 
   convertUnitToMT: function (x) {
-    var y = new bigdecimal.BigDecimal(x);
-    return y.multiply(convertConstant).toPlainString();
+    var y = new BigNumber(x);
+    return y.multipliedBy(convertConstant).toPlainString();
   },
 
   convertUnitToSkkoin: function (x) {
-    var y = new bigdecimal.BigDecimal(x);
-    return y.divide(convertConstant).toPlainString();
+    var y = new BigNumber(x);
+    return y.dividedBy(convertConstant).toPlainString();
   }
 }
