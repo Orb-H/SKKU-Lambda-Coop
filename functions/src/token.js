@@ -146,9 +146,9 @@ module.exports = {
             if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") {
               resolve("Receiver is not system.");
             } else {
-              if (amount === target) {
+              if (amount.isEqualTo(target)) {
                 resolve("Target value matches");
-              } else if (amount < target) {
+              } else if (amount.comparedTo(target) < 0) {
                 resolve("Too small amount");
               } else {
                 resolve("Too big amount");
