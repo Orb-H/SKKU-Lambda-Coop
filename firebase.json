@@ -80,6 +80,10 @@
       {
         "source": "/client/getgiftdetail",
         "function": "getGifticonDetail"
+      },
+      {
+        "source": "/client/findnickname",
+        "function": "findNickname"
       }
     ]
   },

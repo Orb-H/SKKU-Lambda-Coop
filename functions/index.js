@@ -84,6 +84,7 @@ exports.lookupWallet = client.lookupWallet;
 exports.checkBalance = client.checkBalance;
 exports.getGifticonTypes = client.getGifticonTypes;
 exports.getGifticonDetail = client.getGifticonDetail;
+exports.findNickname = client.nicknamebywaddr;
 
 exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;

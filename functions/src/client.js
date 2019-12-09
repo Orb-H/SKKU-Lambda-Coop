@@ -303,5 +303,31 @@ module.exports = {
     } else {
       res.status(404).send('');
     }
+  }),
+
+  nicknamebywaddr: functions.https.onRequest(async (req, res) => {
+    var obj = {
+      result: false,
+      data: {}
+    };
+    if (req.method === 'POST') {
+      var body = req.body;
+      var waddr = body.w_address;
+      try {
+        var snapshot = await db.collection('login').where('w_address', '==', waddr).select('nickname').get();
+        if (snapshot.empty) {
+          obj.data.message = "No such email.";
+          res.status(400).send(obj);
+        } else {
+          obj.result = true;
+          obj.data.nickname = snapshot.docs[0].data().nickname;
+          res.send(obj);
+        }
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } else {
+      res.status(404).send('');
+    }
   })
 };
