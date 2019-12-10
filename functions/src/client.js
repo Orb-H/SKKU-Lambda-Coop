@@ -276,7 +276,7 @@ module.exports = {
         data: {}
       };
       try {
-        obj.data = await gifticon.gifticonlist();
+        obj.data = await gifticon.gifticonlistuser();
         obj.result = true;
         res.send(obj);
       } catch (err) {

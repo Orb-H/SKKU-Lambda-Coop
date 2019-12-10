@@ -127,7 +127,7 @@ module.exports = {
     }
   }),
 
-  gifticonlist: function() {
+  gifticonlist: function () {
     return new Promise(async (resolve, reject) => {
       try {
         var obj = {
@@ -164,7 +164,47 @@ module.exports = {
     })
   },
 
-  gifticondetail: function() {
+  gifticonlistuser: function () {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var obj = {
+          content: []
+        };
+        var query = await db.collection('gifticon').get();
+
+        for (var doc of query.docs) {
+          var temp = false;
+          var data = doc.data();
+          if (data.used === true) {
+            continue;
+          }
+          for (var i = 0; i < obj.content.length; i++) {
+            var content = obj.content[i];
+            if (content.name === data.menu && content.category1 === data.category1 && content.category2 === data.category2) {
+              temp = true;
+              obj.content[i].count++;
+              break;
+            }
+          }
+          if (temp === false) {
+            obj.content.push({
+              name: data.menu,
+              category1: data.category1,
+              category2: data.category2,
+              cost: data.price,
+              count: 1
+            });
+          }
+        }
+
+        resolve(obj);
+      } catch (err) {
+        reject(err);
+      }
+    })
+  },
+
+  gifticondetail: function () {
     return new Promise(async (resolve, reject) => {
       try {
         var obj = {
