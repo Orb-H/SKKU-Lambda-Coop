@@ -6,8 +6,9 @@ const {
   db,
 } = require('./admin.js');
 const gifticon = require('./gifticon.js');
-//클라이언트 ==================================================================
+
 module.exports = {
+  // a function to check if email is already used for account(HTTP)
   duplicate: functions.https.onRequest(async (req, res) => {
     var obj = {
       result: false,
@@ -17,7 +18,7 @@ module.exports = {
       var body = req.body;
       var email = body.email;
       try {
-        var snapshot = await db.collection('login').where('email', '==', email).select('email').get();
+        var snapshot = await db.collection('login').where('email', '==', email).select('email').get(); // find account with email
         if (!snapshot.empty) {
           obj.data.message = "Already registered email.";
           res.status(400).send(obj);
@@ -31,9 +32,9 @@ module.exports = {
     } else {
       res.status(404).send('');
     }
-
   }),
 
+  // a function returning nickname of given email(HTTP)
   nickname: functions.https.onRequest(async (req, res) => {
     var obj = {
       result: false,
@@ -43,7 +44,7 @@ module.exports = {
       var body = req.body;
       var email = body.email;
       try {
-        var snapshot = await db.collection('login').where('email', '==', email).select('nickname').get();
+        var snapshot = await db.collection('login').where('email', '==', email).select('nickname').get(); // get nickname using email
         if (snapshot.empty) {
           obj.data.message = "No such email.";
           res.status(400).send(obj);
@@ -60,7 +61,7 @@ module.exports = {
     }
   }),
 
-  //1. 최초 가입 : 이메일address, 닉네임, wallet address 를 받고 db와 확인후 token 지급
+  // a function for client signup(HTTP)
   signup: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     var reqemail = body.email;
@@ -72,25 +73,25 @@ module.exports = {
       "data": {}
     }
     try {
-      var snapshot = await db.collection('login').where('email', '==', reqemail).select('nickname').get();
+      var snapshot = await db.collection('login').where('email', '==', reqemail).select('nickname').get(); // check if email exists
       if (!snapshot.empty) {
         error_code |= 1;
       }
 
-      snapshot = await db.collection('login').where('nickname', '==', reqnickname).select('nickname').get();
+      snapshot = await db.collection('login').where('nickname', '==', reqnickname).select('nickname').get(); // check if nickname exists
       if (!snapshot.empty) {
         error_code |= 2;
       }
 
       if (error_code === 0) {
-        await db.collection('login').add({
+        await db.collection('login').add({ // add new account
           email: reqemail,
           nickname: reqnickname,
           w_address: reqwaddress,
           recommender: false
         });
         obj.result = true;
-        var sendtoken = await token.adminSendToken(reqemail, true, 1);
+        var sendtoken = await token.adminSendToken(reqemail, true, 1); // bonus 1 token
         res.send(obj);
       } else {
         obj.data.error_code = error_code;
@@ -100,10 +101,9 @@ module.exports = {
       res.status(500).send(err.message);
     }
   }),
-  //2. 추천인 입력 : 추천인 입력 받아 확인 후에 맞을 시 토큰 지급
+
+  // a function for recommender input(HTTP)
   recommend: functions.https.onRequest(async (req, res) => {
-    //가입자 waddress, 추천인 waddress을 받아 db에 존재하고 본인이 아닐 경우에 각각의 사람에게 token 지급
-    //U.I 쪽에서 같은 w_address 입력 못하도록 막아준다.
     var body = req.body;
     var signup_waddress = body.s_waddress;
     var re_waddress = body.r_waddress;
@@ -114,22 +114,21 @@ module.exports = {
     var check = 0;
     let loginRef = db.collection('login');
 
-    var snapshot = await loginRef.where('w_address', '==', re_waddress).select('nickname').get();
+    var snapshot = await loginRef.where('w_address', '==', re_waddress).select('nickname').get(); // find recommender's account
     if (snapshot.empty) {
       check |= 2;
     }
 
-    snapshot = await loginRef.where('w_address', '==', signup_waddress).select('recommender').get();
+    snapshot = await loginRef.where('w_address', '==', signup_waddress).select('recommender').get(); // find newly registered user's account
     if (snapshot.empty) {
       check |= 1;
     }
     if (check === 0) {
       var doc = snapshot.docs[0];
       if (doc.data().recommender === false) {
-        //존재하는 추천인이 있을때 해당하는 waddress 각각에 추천토큰 지급
         try {
-          var sendtoken = await token.adminSendToken(signup_waddress, false, 1);
-          var sendtoken1 = await token.adminSendToken(re_waddress, false, 1);
+          var sendtoken = await token.adminSendToken(signup_waddress, false, 1); // bonus 1 token
+          var sendtoken1 = await token.adminSendToken(re_waddress, false, 1); // bonus 1 token
         } catch (err) {
           res.status(500).send(err.message);
         }
@@ -151,28 +150,22 @@ module.exports = {
       res.status(400).send(obj);
     }
   }),
-  //3. 기프티콘 구매 부분.
-  //인풋값 : txhash , name, category1, category2
-  //RESPONSE :
-  //tx hash 가 존재하지 않음 = 1
-  //토큰값이 기프티콘 가격보다 적을 경우 =2
-  //토큰값이 기프티콘 가격보다 클경우 =3
-  //기프티콘의 종류가 존재하지 않을 때 =4
+
+  // a function for users buying gifticons(HTTP)
   gifticonMain: functions.https.onRequest(async (req, res) => {
-    //클라이언트로부터 해시를 받아서 검색한다
     if (req.method === 'POST') {
       var body = req.body;
       var obj = {
         "result": false,
         "data": {}
       }
-      var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txhash).get();
+      var valid_hash = await db.collection('transaction').where('transaction_hash', '==', body.txhash).get(); // check if TX is already used for buying gifticons
       if (!valid_hash.empty) {
         obj.data.error_code = 5;
         res.status(400).send(obj);
       }
       try {
-        var snapshot = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).where('used', '==', false).select('price', 'image').get();
+        var snapshot = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).where('used', '==', false).select('price', 'image').get(); // find gifticon with given condition
         if (snapshot.empty) {
           obj.data.error_code = 4;
           res.status(400).send(obj);
@@ -180,7 +173,7 @@ module.exports = {
           var doc = snapshot.docs[0];
           var giftprice = doc.data().price;
           console.error(body.txhash);
-          var s = await token.transactioncheck(body.txhash, giftprice);
+          var s = await token.transactioncheck(body.txhash, giftprice); // check transferred amount of token and compare with target value
           if (s === 'Target value matches') {
             let encodedimage = doc.data().image;
             obj.data.image = encodedimage;
@@ -192,7 +185,7 @@ module.exports = {
             });
 
             obj.result = true;
-            await db.collection('transaction').add({
+            await db.collection('transaction').add({ // check as used TX
               transaction_hash: body.txhash
             });
             res.send(obj);
@@ -215,6 +208,7 @@ module.exports = {
     }
   }),
 
+  // a function for creating new wallet(HTTP)
   createWallet: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -233,6 +227,7 @@ module.exports = {
     }
   }),
 
+  // a function for finding wallet with private key(HTTP)
   lookupWallet: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -251,6 +246,7 @@ module.exports = {
     }
   }),
 
+  // a function for checking balance of given wallet(HTTP)
   checkBalance: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -269,6 +265,7 @@ module.exports = {
     }
   }),
 
+  // a function returning list of gifticon types(HTTP, Android)
   getGifticonTypes: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var obj = {
@@ -287,6 +284,7 @@ module.exports = {
     }
   }),
 
+  // a function returning detailed information of gifticon(HTTP)
   getGifticonDetail: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var obj = {
@@ -305,6 +303,7 @@ module.exports = {
     }
   }),
 
+  // a function returning nickname with wallet address(HTTP)
   nicknamebywaddr: functions.https.onRequest(async (req, res) => {
     var obj = {
       result: false,
@@ -314,7 +313,7 @@ module.exports = {
       var body = req.body;
       var waddr = body.w_address;
       try {
-        var snapshot = await db.collection('login').where('w_address', '==', waddr).select('nickname').get();
+        var snapshot = await db.collection('login').where('w_address', '==', waddr).select('nickname').get(); // get nickname using wallet address
         if (snapshot.empty) {
           obj.data.message = "No such email.";
           res.status(400).send(obj);

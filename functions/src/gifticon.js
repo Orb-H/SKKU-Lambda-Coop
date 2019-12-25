@@ -5,7 +5,7 @@ const {
 } = require('./admin.js');
 const login = require('./login.js');
 module.exports = {
-  //2. 웹->서버 기프티콘 전달 요청주소 POST/gifticons/register
+  // a function for adding new gifticon to database from web page
   webtoservergift: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -24,13 +24,13 @@ module.exports = {
       var glength = body.length;
       var gprice = body.cost;
       try {
-        var query = await db.collection('gifticon').where('menu', '==', gname).where('category1', '==', gcategory1).where('category2', '==', gcategory2).get();
+        var query = await db.collection('gifticon').where('menu', '==', gname).where('category1', '==', gcategory1).where('category2', '==', gcategory2).get(); // check if gifticons of same type exist
         if (query.docs.length !== 0) {
           gprice = query.docs[0].data().price;
         }
         /* eslint-disable no-await-in-loop */
         for (var i = 0; i < glength; i++) {
-          await db.collection('gifticon').add({
+          await db.collection('gifticon').add({ // add all gifticons to DB
             category1: gcategory1,
             category2: gcategory2,
             menu: gname,
@@ -49,7 +49,8 @@ module.exports = {
       res.status(405).send('');
     }
   }),
-  //3. 서버->웹 기프티콘 리스트 전달 요청주소 POST/gifticons/list
+
+  // a function for sending list of gifticons to web page(HTTP function)
   servertowebgift: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -77,7 +78,8 @@ module.exports = {
       res.status(404).send('');
     }
   }),
-  //4. 기프티콘 특정 Type 정보 전달 요청주소 POST/gifticons/detail
+
+  // a function for sending detailed information of specific gifticon type to web page(HTTP function)
   gtype: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -101,7 +103,8 @@ module.exports = {
       res.status(404).send('');
     }
   }),
-  //5. 기프티콘 삭제 요청 요청주소 POST/gifticons/remove
+
+  // a function for removing specific gifticon from database(HTTP function)
   gdelete: functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
       var body = req.body;
@@ -127,6 +130,7 @@ module.exports = {
     }
   }),
 
+  // a function for creating list of gifticon types(web page)
   gifticonlist: function () {
     return new Promise(async (resolve, reject) => {
       try {
@@ -164,6 +168,7 @@ module.exports = {
     })
   },
 
+  // a function for creating a list of gifticon types(Android)
   gifticonlistuser: function () {
     return new Promise(async (resolve, reject) => {
       try {
@@ -204,13 +209,14 @@ module.exports = {
     })
   },
 
+  // a function returning detailed information of gifticon
   gifticondetail: function () {
     return new Promise(async (resolve, reject) => {
       try {
         var obj = {
           content: []
         };
-        var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get();
+        var dbquery = await db.collection('gifticon').where('menu', '==', body.name).where('category1', '==', body.category1).where('category2', '==', body.category2).get(); // get all gifticons with given type
         for (var doc of dbquery.docs) {
           let encodedimage = doc.data().image;
           obj.content.push({

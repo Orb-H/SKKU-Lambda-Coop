@@ -6,6 +6,7 @@ const {
 const config = functions.config();
 
 module.exports = {
+  // a function for login in web page(HTTP call)
   adminlogin: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     if (req.method === 'POST') {
@@ -31,6 +32,7 @@ module.exports = {
     }
   }),
 
+  // a function for web page which sends luniverse API key to page(HTTP call)
   getApiKey: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     if (req.method === 'POST') {
@@ -57,7 +59,8 @@ module.exports = {
     }
   }),
 
-  checkadmin: function(token) {
+  // a function for checking if currently logged-in account is admin
+  checkadmin: function (token) {
     return new Promise((resolve, reject) => {
       auth.verifyIdToken(token).then((decodedToken) => {
         let uid = decodedToken.uid;
@@ -67,9 +70,7 @@ module.exports = {
           throw new Error("Invalid uid");
         }
         return uid;
-      }).catch((error) => {
-        resolve(false);
-      });
+      }).catch((error) => resolve(false));
     });
   }
 }
