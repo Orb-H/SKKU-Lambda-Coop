@@ -88,5 +88,3 @@ exports.webtoservergift = gifticon.webtoservergift;
 exports.servertowebgift = gifticon.servertowebgift;
 exports.gtype = gifticon.gtype;
 exports.gdelete = gifticon.gdelete;
-
-exports.debug_transactioncheck = token.debug_transactioncheck;
