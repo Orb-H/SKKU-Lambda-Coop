@@ -2,7 +2,6 @@
 
 // [START import]
 const functions = require('firebase-functions');
-//const spawn = require('child-process-promise').spawn;
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -69,7 +68,6 @@ const token = require('./src/token.js');
 });*/
 
 
-//1. 관리자 로그인 요청주소 : POST/login
 exports.adminlogin = login.adminlogin;
 exports.getApiKey = login.getApiKey;
 exports.checkadmin = login.checkadmin;

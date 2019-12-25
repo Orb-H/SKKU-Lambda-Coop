@@ -12,8 +12,10 @@ const bignumber = require('bignumber.js');
 const convertConstant = new bignumber.BigNumber("1000000000000000000");
 
 module.exports = {
+  // A function for admin or web page to send token to other users
   adminSendToken: function (target, isemail, amount) {
     return new Promise(async (resolve, reject) => {
+      // input type can be two types, email or wallet address. if isemail is true, target is email, or target is wallet address
       if (isemail === true) {
         var query = await db.collection('login').where('email', '==', target).select("w_address").get();
         if (query.docs.length === 0) {
@@ -28,6 +30,7 @@ module.exports = {
         }
       };
 
+      // call luniverse API to request adminSend
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/transactions/adminSend",
@@ -38,25 +41,23 @@ module.exports = {
         }
       }, (res) => {
         result = "";
-        res.on('data', (body) => {
-          result += body;
-        });
+        res.on('data', (body) => result += body);
         res.on("close", () => {
-          console.error(result);
+          console.error(result); //LOG
           var body = JSON.parse(result);
           resolve(body.data.result);
         });
       });
-      req.on("error", (err) => {
-        reject(err);
-      });
+      req.on("error", (err) => reject(err));
       req.write(JSON.stringify(body));
       req.end();
     });
   },
 
+  // A function for normal users to send token to other users
   clientSendToken: function (privateKey, from_address, to_address, amount) {
     return new Promise((resolve, reject) => {
+      // senders private key
       const pKey = Buffer.from(privateKey, "hex");
       var data = {
         "from": from_address,
@@ -66,6 +67,7 @@ module.exports = {
         }
       };
 
+      // call luniverse API to request clientSend
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/transactions/clientSend",
@@ -75,7 +77,11 @@ module.exports = {
           "Authorization": "Bearer " + config.auth.luniverse
         }
       }, (res) => {
-        res.on("data", (body) => {
+        result = ""
+        res.on("data", (body) => result += body)
+        res.on("close", () => {
+          var body = JSON.parse(result);
+          // sign transaction with sender
           const tx = new EthereumTx(body.data.rawTx);
           tx.sign(pKey);
 
@@ -83,6 +89,7 @@ module.exports = {
             "signedTx": tx.serialize().toString("hex")
           }
 
+          // call luniverse API to send signed TX
           var new_req = https.request({
             hostname: "api.luniverse.io",
             path: "/tx/v1.1/transactions/clientSend",
@@ -92,35 +99,29 @@ module.exports = {
               "Authorization": "Bearer " + config.auth.luniverse
             }
           }, (new_res) => {
-            new_res.on("data", (new_body) => {
+            new_result = '';
+            new_res.on('data', (new_body) => new_result += new_body);
+            new_res.on('close', () => {
+              var new_body = JSON.parse(new_result)
               resolve(new_body.data.txId);
             });
           });
-          new_req.on("error", (err) => {
-            reject(err);
-          });
+          new_req.on("error", (err) => reject(err));
           new_req.write(JSON.stringify(new_data));
           new_req.end();
         });
       });
-      req.on("error", (err) => {
-        reject(err);
-      });
+      req.on("error", (err) => reject(err));
       req.write(JSON.stringify(data));
       req.end();
     });
   },
 
-  debug_transactioncheck: functions.https.onRequest(async (req, res) => {
-    var body = req.body;
-    var txid = body.txid;
-    var result = await module.exports.transactioncheck(txid, 0);
-    res.send(result);
-  }),
-
+  // check if transferred token amount is same with targetAmount
   transactioncheck: function (txId, targetAmount) {
     return new Promise((resolve, reject) => {
-      console.error(txId + " " + targetAmount);
+      console.error(txId + " " + targetAmount); // LOG
+      // call luniverse API for tx histories
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/histories/" + txId,
@@ -131,9 +132,7 @@ module.exports = {
         }
       }, res => {
         var result = "";
-        res.on("data", body => {
-          result += body;
-        });
+        res.on("data", body => result += body);
         res.on("close", () => {
           try {
             console.error(result);
@@ -143,9 +142,9 @@ module.exports = {
             var amount = new bignumber.BigNumber(data);
             var target = new bignumber.BigNumber(targetAmount).multipliedBy(convertConstant);
             console.error(amount + " ? " + target);
-            if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") {
+            if (to.toLowerCase() !== "0x04a4103cb990ecc28c6dd882b08a64f1bdb6ffc2") { // sys address
               resolve("Receiver is not system.");
-            } else {
+            } else { // compare target value with transferred tokens in transaction
               if (amount.isEqualTo(target)) {
                 resolve("Target value matches");
               } else if (amount.comparedTo(target) < 0) {
@@ -159,13 +158,12 @@ module.exports = {
           }
         })
       });
-      req.on("error", () => {
-        resolve("TX find error");
-      });
+      req.on("error", () => resolve("TX find error"));
       req.end();
     });
   },
 
+  // a function for normal users to send tokens to other users(HTTP function)
   sendFromClient: functions.https.onRequest(async (req, res) => {
     var body = req.body;
     var pKey = body.privateKey;
@@ -181,13 +179,15 @@ module.exports = {
     }
   }),
 
+  // a function for creating a new wallet
   createWallet: function (privateKey) {
     return new Promise(async (resolve, reject) => {
       var data = {
         walletType: "LUNIVERSE",
-        userKey: privateKey
+        userKey: privateKey // using user's own private key
       };
 
+      // call luniverse API for creating a new wallet
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/wallets",
@@ -198,15 +198,13 @@ module.exports = {
         }
       }, res => {
         var result = "";
-        res.on("data", body => {
-          result += body;
-        });
+        res.on("data", body => result += body);
         res.on("close", () => {
           try {
             var body = JSON.parse(result);
             if (body.result === true) {
               var address = body.data.address;
-              resolve(address);
+              resolve(address); // return address of a new wallet
             } else {
               throw new Error(body.message);
             }
@@ -215,14 +213,13 @@ module.exports = {
           }
         })
       });
-      req.on("error", () => {
-        resolve("TX find error");
-      });
+      req.on("error", () => resolve("TX find error"));
       req.write(JSON.stringify(data));
       req.end();
     });
   },
 
+  // a function for finding wallet created by given private key
   findWallet: function (privateKey) {
     return new Promise(async (resolve, reject) => {
       var data = {
@@ -230,6 +227,7 @@ module.exports = {
         userKey: privateKey
       };
 
+      // call luniverse API for finding wallet
       var req = https.request({
         hostname: "api.luniverse.io",
         path: "/tx/v1.1/wallets/bridge",
@@ -240,15 +238,13 @@ module.exports = {
         }
       }, res => {
         var result = "";
-        res.on("data", body => {
-          result += body;
-        });
+        res.on("data", body => result += body);
         res.on("close", () => {
           try {
             var body = JSON.parse(result);
             if (body.result === true) {
               var address = body.data.address;
-              resolve(address);
+              resolve(address); // return result
             } else {
               throw new Error(body.message);
             }
@@ -257,14 +253,13 @@ module.exports = {
           }
         })
       });
-      req.on("error", () => {
-        resolve("TX find error");
-      });
+      req.on("error", () => resolve("wallet find error"));
       req.write(JSON.stringify(data));
       req.end();
     });
   },
 
+  // a function for checking balance of wallet
   checkBalance: function (address) {
     return new Promise(async (resolve, reject) => {
       var req = https.request({
@@ -277,15 +272,13 @@ module.exports = {
         }
       }, res => {
         var result = "";
-        res.on("data", body => {
-          result += body;
-        });
+        res.on("data", body => result += body);
         res.on("close", () => {
           try {
             var body = JSON.parse(result);
             if (body.result === true) {
               var balance = module.exports.convertUnitToSkkoin(body.data.balance);
-              resolve(balance);
+              resolve(balance); // return balance
             } else {
               throw new Error(body.message);
             }
@@ -294,18 +287,18 @@ module.exports = {
           }
         })
       });
-      req.on("error", () => {
-        resolve("TX find error");
-      });
+      req.on("error", () => resolve("wallet find error"));
       req.end();
     });
   },
 
+  // convert SKKOIN unit to MT(transfer unit) unit
   convertUnitToMT: function (x) {
     var y = new bignumber.BigNumber(x);
     return y.multipliedBy(convertConstant).toFixed();
   },
 
+  // convert MT(transfer unit) unit to SKKOIN unit
   convertUnitToSkkoin: function (x) {
     var y = new bignumber.BigNumber(x);
     return y.dividedBy(convertConstant).toFixed();
